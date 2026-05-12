@@ -1,0 +1,12 @@
+*.zip
+*.png
+*.dSYM
+*.pdf
+cmake-build-debug-gcc/*
+*.txt
+*.md
+.idea/*
+.vscode/*
+*.DS_Store
+*.vimrc
+*.xml
