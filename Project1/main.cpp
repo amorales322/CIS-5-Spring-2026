@@ -35,6 +35,8 @@ int main(int argc, char **argv) {
     bool playr21{false};
     bool dealr21{false};
 
+    bool plrSplt{false};
+
     char plrChce{};
     float plrInpt{};
 
@@ -44,7 +46,7 @@ int main(int argc, char **argv) {
     unsigned short plrWins{};
     unsigned short plrLoss{};
 
-    char plrHnd1{};
+    char plrHnd1{10};
     char plrHnd2{};
 
     char delCrd1{};
@@ -96,7 +98,7 @@ int main(int argc, char **argv) {
         plrInpt = std::floor(plrInpt);
 
         // Verify player wager is valid amount and that the player has enough chips
-        while (plrInpt > min(static_cast<float>(plrCash), 10000.0f) || plrInpt < 5.0f) {
+        while (plrInpt > min(static_cast<float>(plrChps), 10000.0f) || plrInpt < 5.0f) {
             cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $";
             if (plrChps >= 10000)
                 cout << "10,000]: ";
@@ -114,15 +116,50 @@ int main(int argc, char **argv) {
         // Player Draw Cards
         curDrwC += rand() % 12;
         plrHnd1 = curDrwC == 0 ? 1 : curDrwC;
+        switch (curDrwC) {
+            case 11:
+                cout << "Your first card is an ace.\n";
+                break;
+            case 10:
+                cout << "Your first card is a 10/face card.\n";
+                break;
+            default:
+                cout << "Your first card is a " << static_cast<int>(curDrwC) << " card.\n";
+        }
 
         curDrwC = rand() % 12;
         // Check if first card is an ace, if it is, count the second card with a value of 1
-        curDrwC = plrHnd1 == 11 ? 1 : curDrwC;
         plrHnd1 += curDrwC == 0 ? 1 : curDrwC;
+        switch (curDrwC) {
+            case 11:
+                if (plrHnd1 == 11) {
+                    cout << "Your second card is an ace.\n";
+                    plrHnd1 += curDrwC;
+                } else {
+                    cout << "Your second card is an ace, counted with a value of 1.\n";
+                    plrHnd1++;
+                }
+                break;
+            case 10:
+                cout << "Your second card is a 10/face card.\n";
+                break;
+            default:
+                cout << "Your second card is a " << static_cast<int>(curDrwC) << " card.\n";
+        }
 
         // Dealer Draw Cards
         curDrwC = rand() % 12;
         delCrd1 = curDrwC == 0 ? 1 : curDrwC;
+        switch (curDrwC) {
+            case 11:
+                cout << "The dealer's first card is an ace.\n";
+                break;
+            case 10:
+                cout << "The dealer's first card is a 10/face card.\n";
+                break;
+            default:
+                cout << "The dealer's first card is a " << static_cast<int>(curDrwC) << " card.\n";
+        }
 
         curDrwC = rand() % 12;
         // Check if first card is an ace, if it is, count the second card with a value of 1
@@ -147,6 +184,25 @@ int main(int argc, char **argv) {
         } else if (!playr21 && dealr21) {
             gameOvr = true;
             cout << "The dealer has a blackjack and you do not, you lose.\n";
+        }
+
+        if (!gameOvr) {
+            if (plrHnd1 % 2 == 0 && plrChps >= plyrBet) {
+                cout << "You have been dealt a pair, would you like to split your cards? (Y or N): ";
+                cin >> plrChce;
+                plrChce = static_cast<char>(toupper(plrChce));
+
+                while (plrChce != 89 && plrChce != 78) {
+                    cout << "Invalid option. Enter New Option (Y or N): ";
+                    cin >> plrChce;
+                    plrChce = static_cast<char>(toupper(plrChce));
+                }
+
+                if (plrChce == 89) {
+                    plrHnd2 = plrHnd1 / 2;
+                    plrSplt = true;
+                }
+            }
         }
 
         // Game End
