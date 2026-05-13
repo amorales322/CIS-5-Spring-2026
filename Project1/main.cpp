@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
     unsigned short plrWins{};
     unsigned short plrLoss{};
 
-    char plrHnd1{10};
+    char plrHnd1{};
     char plrHnd2{};
 
     char delCrd1{};
@@ -113,10 +113,13 @@ int main(int argc, char **argv) {
         plyrBet = static_cast<unsigned short>(floor(plrInpt));
         plrChps -= plyrBet;
 
-        // Player Draw Cards
-        curDrwC += rand() % 12;
-        plrHnd1 = curDrwC == 0 ? 1 : curDrwC;
-        switch (curDrwC) {
+        //
+        // Player Card Drawing
+        //
+
+        // Draw First Player Card
+        plrHnd1 = max(rand() % 12, 1);
+        switch (plrHnd1) {
             case 11:
                 cout << "Your first card is an ace.\n";
                 break;
@@ -124,33 +127,39 @@ int main(int argc, char **argv) {
                 cout << "Your first card is a 10/face card.\n";
                 break;
             default:
-                cout << "Your first card is a " << static_cast<int>(curDrwC) << " card.\n";
+                cout << "Your first card is a " << static_cast<int>(plrHnd1) << " card.\n";
         }
 
-        curDrwC = rand() % 12;
-        // Check if first card is an ace, if it is, count the second card with a value of 1
-        plrHnd1 += curDrwC == 0 ? 1 : curDrwC;
+        // Draw Second Player Card
+        curDrwC = max(rand() % 12, 1);
         switch (curDrwC) {
             case 11:
                 if (plrHnd1 == 11) {
-                    cout << "Your second card is an ace.\n";
-                    plrHnd1 += curDrwC;
-                } else {
                     cout << "Your second card is an ace, counted with a value of 1.\n";
                     plrHnd1++;
+                } else {
+                    cout << "Your second card is an ace.\n";
+                    plrHnd1 += curDrwC;
                 }
                 break;
             case 10:
                 cout << "Your second card is a 10/face card.\n";
+                plrSplt = plrHnd1 == curDrwC;
+                plrHnd1 += curDrwC;
                 break;
             default:
                 cout << "Your second card is a " << static_cast<int>(curDrwC) << " card.\n";
+                plrSplt = plrHnd1 == curDrwC;
+                plrHnd1 += curDrwC;
         }
 
+        //
         // Dealer Draw Cards
-        curDrwC = rand() % 12;
-        delCrd1 = curDrwC == 0 ? 1 : curDrwC;
-        switch (curDrwC) {
+        //
+
+        // Draw First Dealer Card
+        delCrd1 = max(rand() % 12, 1);
+        switch (delCrd1) {
             case 11:
                 cout << "The dealer's first card is an ace.\n";
                 break;
@@ -158,13 +167,13 @@ int main(int argc, char **argv) {
                 cout << "The dealer's first card is a 10/face card.\n";
                 break;
             default:
-                cout << "The dealer's first card is a " << static_cast<int>(curDrwC) << " card.\n";
+                cout << "The dealer's first card is a " << static_cast<int>(delCrd1) << " card.\n";
         }
 
-        curDrwC = rand() % 12;
+        // Draw Second Dealer Card
+        delCrd2 = max(rand() % 12, 1);
         // Check if first card is an ace, if it is, count the second card with a value of 1
-        curDrwC = delCrd1 == 11 ? 1 : curDrwC;
-        delCrd2 = curDrwC == 0 ? 1 : curDrwC;
+        delCrd2 = delCrd1 == 11 ? 1 : curDrwC;
 
         // Check if player has a blackjack
         if (plrHnd1 == 21)
@@ -187,7 +196,7 @@ int main(int argc, char **argv) {
         }
 
         if (!gameOvr) {
-            if (plrHnd1 % 2 == 0 && plrChps >= plyrBet) {
+            if (plrSplt && plrChps >= plyrBet) {
                 cout << "You have been dealt a pair, would you like to split your cards? (Y or N): ";
                 cin >> plrChce;
                 plrChce = static_cast<char>(toupper(plrChce));
@@ -200,8 +209,9 @@ int main(int argc, char **argv) {
 
                 if (plrChce == 89) {
                     plrHnd2 = plrHnd1 / 2;
-                    plrSplt = true;
-                }
+                    plrHnd1 /= 2;
+                } else
+                    plrSplt = false;
             }
         }
 
