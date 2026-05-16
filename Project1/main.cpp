@@ -30,52 +30,71 @@ int main(int argc, char **argv) {
     // Set random number seed
     srand(time(0));
 
+    //
     // Declare Variables
-    bool gameOvr{false};
-    bool playr21{false};
-    bool dealr21{false};
+    //
 
-    bool plrSplt{false};
-
+    // Game Variables
     char plrChce{};
     float plrInpt{};
+    char curDrwC{};
+    bool plrSplt{false};
 
+    // 1s Place: Player Hand 1, 10s Place: Player Hand 2
+    // States: 0: Default (continue), 1: Push (Player/Dealer Blackjack), 2: Player Blackjack, 3: Dealer Blackjack
+    // 4: Double Down, 5: Surrender, 6: Stand, 7: Player Bust, 8: Dealer Bust, 9: Push: (Player/Dealer Bust)
+    char gameSte{00};
+
+    // Player Variables/Statistics
     unsigned int plrCash{10000};
     unsigned short plrChps{};
     unsigned short plyrBet{};
     unsigned short plrWins{};
     unsigned short plrLoss{};
 
+    // Player Hands
     char plrHnd1{};
     char plrHnd2{};
 
+    // Dealer Hand/Cards
+    char delHand{};
     char delCrd1{};
     char delCrd2{};
 
-    char curDrwC{};
-
+    //
     // Initialize Variables
+    //
+
+    // Debugging Step
+    cout << "Enter Cash Amount: ";
+    cin >> plrCash;
 
     // Purchase Chips
-    cout << "How much money would you like to put to buy chips (Whole $ only) [$5 to $";
-    if (plrCash >= 65000)
-        cout << "65,000]: ";
-    else if (plrCash >= 1000)
-        cout << plrCash / 1000 << "," << setfill('0') << setw(3) << plrCash % 1000 << "]: ";
-    else
-        cout << plrCash << "]: ";
+    cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << (plrCash >= 65'000
+            ? "65,000]: "
+            : plrCash >= 1000
+                  ? to_string(plrCash / 1000) + "," + string(3 - to_string(plrCash % 1000).length(), '0') +
+                    to_string(plrCash % 1000) + "]: "
+                  : to_string(plrCash) + "]: ");
+
     cin >> plrInpt;
     plrInpt = std::floor(plrInpt);
 
     // Verify purchased chip amount is a valid amount and that the player has enough cash
-    while (plrInpt > min(static_cast<float>(plrCash), 65000.0f) || plrInpt < 5.0f) {
-        cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $";
-        if (plrCash >= 65000)
-            cout << "65,000]: ";
-        else if (plrCash >= 1000)
-            cout << plrCash / 1000 << "," << setfill('0') << setw(3) << plrCash % 1000 << "]: ";
-        else
-            cout << plrCash << "]: ";
+    while (plrInpt > (static_cast<float>(plrCash) <= 65'000.0f ? static_cast<float>(plrCash) : 65'000.0f) || plrInpt <
+           5.0f) {
+        cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << (plrCash >= 65'000
+                                                                                   ? "65,000]: "
+                                                                                   : plrCash >= 1000
+                                                                                           ? to_string(plrCash / 1000) +
+                                                                                               "," + string(
+                                                                                                   3 - to_string(
+                                                                                                       plrCash % 1000).
+                                                                                                   length(), '0') +
+                                                                                               to_string(plrCash % 1000)
+                                                                                               + "]: "
+                                                                                           : to_string(
+                                                                                                   plrCash) + "]: ");
 
         cin >> plrInpt;
         plrInpt = std::floor(plrInpt);
@@ -87,25 +106,28 @@ int main(int argc, char **argv) {
     // Game Loop
     do {
         // Get Player Wager
-        cout << "Enter wager amount (Whole $ only) [$5 to $";
-        if (plrChps >= 10000)
-            cout << "10,000]: ";
-        else if (plrChps >= 1000)
-            cout << plrChps / 1000 << "," << setfill('0') << setw(3) << plrChps % 1000 << "]: ";
-        else
-            cout << plrChps << "]: ";
+        cout << "Enter wager amount (Whole $ only) [$5 to $" << (plrChps >= 10000
+                                                                     ? "10,000]: "
+                                                                     : plrChps >= 1000
+                                                                           ? to_string(plrChps / 1000) + "," + string(
+                                                                                 3 - to_string(plrChps % 1000).length(),
+                                                                                 '0') +
+                                                                             to_string(plrChps % 1000) + "]: "
+                                                                           : to_string(plrChps) + "]: ");
         cin >> plrInpt;
         plrInpt = std::floor(plrInpt);
 
         // Verify player wager is valid amount and that the player has enough chips
-        while (plrInpt > min(static_cast<float>(plrChps), 10000.0f) || plrInpt < 5.0f) {
-            cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $";
-            if (plrChps >= 10000)
-                cout << "10,000]: ";
-            else if (plrChps >= 1000)
-                cout << plrChps / 1000 << "," << setfill('0') << setw(3) << plrChps % 1000 << "]: ";
-            else
-                cout << plrChps << "]: ";
+        while (plrInpt > (static_cast<float>(plrChps) <= 10'000.0f ? static_cast<float>(plrChps) : 10'000.0f) || plrInpt
+               < 5.0f) {
+            cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << (plrChps >= 10000
+                    ? "10,000]: "
+                    : plrChps >= 1000
+                          ? to_string(plrChps / 1000) + "," + string(
+                                3 - to_string(plrChps % 1000).length(),
+                                '0') +
+                            to_string(plrChps % 1000) + "]: "
+                          : to_string(plrChps) + "]: ");
             cin >> plrInpt;
             plrInpt = std::floor(plrInpt);
         }
@@ -118,7 +140,7 @@ int main(int argc, char **argv) {
         //
 
         // Draw First Player Card
-        plrHnd1 = max(rand() % 12, 1);
+        plrHnd1 = (rand() % 11) + 1;
         switch (plrHnd1) {
             case 11:
                 cout << "Your first card is an ace.\n";
@@ -131,7 +153,7 @@ int main(int argc, char **argv) {
         }
 
         // Draw Second Player Card
-        curDrwC = max(rand() % 12, 1);
+        curDrwC = (rand() % 11) + 1;
         switch (curDrwC) {
             case 11:
                 if (plrHnd1 == 11) {
@@ -158,7 +180,8 @@ int main(int argc, char **argv) {
         //
 
         // Draw First Dealer Card
-        delCrd1 = max(rand() % 12, 1);
+        delCrd1 = (rand() % 11) + 1;
+        delHand += delCrd1;
         switch (delCrd1) {
             case 11:
                 cout << "The dealer's first card is an ace.\n";
@@ -171,32 +194,24 @@ int main(int argc, char **argv) {
         }
 
         // Draw Second Dealer Card
-        delCrd2 = max(rand() % 12, 1);
+        delCrd2 = (rand() % 11) + 1;
         // Check if first card is an ace, if it is, count the second card with a value of 1
-        delCrd2 = delCrd1 == 11 ? 1 : curDrwC;
+        delCrd2 = delCrd1 == 11 ? 1 : delCrd2;
 
         // Check if player has a blackjack
         if (plrHnd1 == 21)
-            playr21 = true;
+            gameSte = 2;
 
         // Check if dealer has a blackjack
-        if (delCrd1 + delCrd2 == 21)
-            dealr21 = true;
-
-        // Check if either the player or dealer have a blackjack
-        if (playr21 && dealr21) {
-            gameOvr = true;
-            cout << "You and the dealer have a blackjack, game ends in a push.\n";
-        } else if (playr21 && !dealr21) {
-            gameOvr = true;
-            cout << "You have a blackjack, you win and are paid out 3-to-2.\n";
-        } else if (!playr21 && dealr21) {
-            gameOvr = true;
-            cout << "The dealer has a blackjack and you do not, you lose.\n";
+        if (delCrd1 + delCrd2 == 21) {
+            if (gameSte == 2)
+                gameSte = 1;
+            else
+                gameSte = 3;
         }
 
-        if (!gameOvr) {
-            if (plrSplt && plrChps >= plyrBet) {
+        if (gameSte == 0) {
+            if (plrSplt && plrChps >= plyrBet * 2) {
                 cout << "You have been dealt a pair, would you like to split your cards? (Y or N): ";
                 cin >> plrChce;
                 plrChce = static_cast<char>(toupper(plrChce));
@@ -210,6 +225,8 @@ int main(int argc, char **argv) {
                 if (plrChce == 89) {
                     plrHnd2 = plrHnd1 / 2;
                     plrHnd1 /= 2;
+                    plrChps -= plyrBet;
+                    plyrBet *= 2;
                 } else
                     plrSplt = false;
             }
