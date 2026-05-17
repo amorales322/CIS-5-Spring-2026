@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 
     // 1s Place: Player Hand 1, 10s Place: Player Hand 2
     // States: 0: Default (continue), 1: Push (Player/Dealer Blackjack), 2: Player Blackjack, 3: Dealer Blackjack
-    // 4: Double Down, 5: Surrender, 6: Stand, 7: Player Bust, 8: Dealer Bust, 9: Push: (Player/Dealer Bust)
+    // 4: Double Down, 5: Surrender, 6: Stand, 7: Player Bust, 8: Dealer Bust
     char gameSte{00};
 
     // Player Variables/Statistics
@@ -57,7 +57,6 @@ int main(int argc, char **argv) {
     char plrHnd2{};
 
     // Dealer Hand/Cards
-    char delHand{};
     char delCrd1{};
     char delCrd2{};
 
@@ -149,7 +148,7 @@ int main(int argc, char **argv) {
                 cout << "Your first card is a 10/face card.\n";
                 break;
             default:
-                cout << "Your first card is a " << static_cast<int>(plrHnd1) << " card.\n";
+                cout << "Your first card is a(n) " << static_cast<int>(plrHnd1) << " card.\n";
         }
 
         // Draw Second Player Card
@@ -170,7 +169,7 @@ int main(int argc, char **argv) {
                 plrHnd1 += curDrwC;
                 break;
             default:
-                cout << "Your second card is a " << static_cast<int>(curDrwC) << " card.\n";
+                cout << "Your second card is a(n) " << static_cast<int>(curDrwC) << " card.\n";
                 plrSplt = plrHnd1 == curDrwC;
                 plrHnd1 += curDrwC;
         }
@@ -181,7 +180,6 @@ int main(int argc, char **argv) {
 
         // Draw First Dealer Card
         delCrd1 = (rand() % 11) + 1;
-        delHand += delCrd1;
         switch (delCrd1) {
             case 11:
                 cout << "The dealer's first card is an ace.\n";
@@ -190,7 +188,7 @@ int main(int argc, char **argv) {
                 cout << "The dealer's first card is a 10/face card.\n";
                 break;
             default:
-                cout << "The dealer's first card is a " << static_cast<int>(delCrd1) << " card.\n";
+                cout << "The dealer's first card is a(n) " << static_cast<int>(delCrd1) << " card.\n";
         }
 
         // Draw Second Dealer Card
@@ -501,6 +499,45 @@ int main(int argc, char **argv) {
                                 break;
                         }
                     } while (gameSte / 10 == 0);
+                }
+            }
+
+            if (gameSte != 5 && !((!plrSplt && gameSte % 10 == 7) || (
+                                      gameSte % 10 == 7 && plrSplt && gameSte / 10 == 7))) {
+                // Dealer Move
+                switch (delCrd2) {
+                    case 11:
+                        cout << "The dealer's second card is an ace.\n";
+                        break;
+                    case 10:
+                        cout << "The dealer's second card is a 10/face card.\n";
+                        break;
+                    default:
+                        cout << "The dealer's second card is a(n) " << static_cast<int>(delCrd2) << " card.\n";
+                }
+
+                // Dealer stands on soft 17
+                while (delCrd1 + delCrd2 < 17) {
+                    delCrd1 += delCrd2;
+                    delCrd2 = (rand() % 11) + 1;
+                    switch (delCrd2) {
+                        case 11:
+                            cout << "The dealer draws another card and it is an ace.\n";
+                            break;
+                        case 10:
+                            cout << "The dealer draws another card and it is a 10/face card.\n";
+                            break;
+                        default:
+                            cout << "The dealer draws another card and it is a(n) " << static_cast<int>(delCrd2) <<
+                                    " card.\n";
+                    }
+                }
+
+                if (delCrd1 + delCrd2 > 21)
+                    gameSte = 8;
+                if (delCrd1 + delCrd2 == 21) {
+                    gameSte = (gameSte % 10 == 2 ? gameSte / 10 + 1 : gameSte / 10 + 3);
+                    gameSte = (gameSte / 10 == 2 ? gameSte % 10 + 10 : gameSte % 10 + 30);
                 }
             }
         }
