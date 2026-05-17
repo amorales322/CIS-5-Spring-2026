@@ -227,18 +227,21 @@ int main(int argc, char **argv) {
                     plrHnd1 /= 2;
                     plrChps -= plrBet;
                     plrBet *= 2;
-                } else
+                } else {
                     plrSplt = false;
-            }
+                }
+            } else
+                plrSplt = false;
 
-            plrDbDn = plrChps >= plrBet;
+            plrDbDn = plrChps >= (plrSplt ? plrBet / 2 : plrBet);
+
             cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " << static_cast
                     <int>(delCrd1) << ")\nS: Stand, H: Hit" << (plrDbDn ? ", D: Double Down" : "") << (
                         !plrSplt ? ", X: Surrender" : "") << " -> ";
             cin >> plrChce;
             plrChce = static_cast<char>(toupper(plrChce));
             if (plrSplt && plrDbDn) {
-                cout << "Cards Split and Player can Double Down.\n";
+                cout << "Invalid Option. Enter New Option (S: Stand, H: Hit, D: Double Down): ";
                 while (plrChce != 83 && plrChce != 68 && plrChce != 72) {
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
@@ -251,7 +254,7 @@ int main(int argc, char **argv) {
                 }
             } else if (!plrSplt && plrDbDn) {
                 while (plrChce != 83 && plrChce != 68 && plrChce != 72 && plrChce != 88) {
-                    cout << "Invalid Option. Enter New Option (S: Stand, D: Double Down, H: Hit, X: Surrender): ";
+                    cout << "Invalid Option. Enter New Option (S: Stand, H: Hit, D: Double Down, X: Surrender): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
                 }
@@ -315,12 +318,10 @@ int main(int argc, char **argv) {
                             break;
                         case 10:
                             cout << "You have drawn a 10/face card.\n";
-                            plrSplt = plrHnd1 == curDrwC;
                             plrHnd1 += curDrwC;
                             break;
                         default:
-                            cout << "Your have drawn a(n)" << static_cast<int>(curDrwC) << " card.\n";
-                            plrSplt = plrHnd1 == curDrwC;
+                            cout << "Your have drawn a(n) " << static_cast<int>(curDrwC) << " card.\n";
                             plrHnd1 += curDrwC;
                     }
                     if (plrHnd1 > 21)
@@ -328,6 +329,51 @@ int main(int argc, char **argv) {
                     else if (plrHnd1 == 21)
                         gameSte = 2;
                     break;
+            }
+
+            if (gameSte == 0) {
+                do {
+                    cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " <<
+                            static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit -> ";
+                    cin >> plrChce;
+                    plrChce = static_cast<char>(toupper(plrChce));
+                    while (plrChce != 83 && plrChce != 72) {
+                        cout << "Invalid Option. Enter New Option (S: Stand, H: Hit): ";
+                        cin >> plrChce;
+                        plrChce = static_cast<char>(toupper(plrChce));
+                    }
+
+                    switch (plrChce) {
+                        case 'S':
+                            gameSte = 6;
+                            break;
+                        case 'H':
+                            curDrwC = (rand() % 11) + 1;
+                            switch (curDrwC) {
+                                case 11:
+                                    if (plrHnd1 > 10) {
+                                        cout << "You have drawn an ace, counted with a value of 1.\n";
+                                        plrHnd1++;
+                                    } else {
+                                        cout << "You have drawn an ace.\n";
+                                        plrHnd1 += curDrwC;
+                                    }
+                                    break;
+                                case 10:
+                                    cout << "You have drawn a 10/face card.\n";
+                                    plrHnd1 += curDrwC;
+                                    break;
+                                default:
+                                    cout << "Your have drawn a(n) " << static_cast<int>(curDrwC) << " card.\n";
+                                    plrHnd1 += curDrwC;
+                            }
+                            if (plrHnd1 > 21)
+                                gameSte = 7;
+                            else if (plrHnd1 == 21)
+                                gameSte = 2;
+                            break;
+                    }
+                } while (gameSte == 0);
             }
         }
 
