@@ -622,14 +622,81 @@ int main(int argc, char **argv) {
         cout << "Player Statistics:\n* Wins: " << plrWins << "\n* Losses: " << plrLoss << "\n* Cash: " <<
                 plrCash << "\n* Chips: " << plrChps << "\n";
 
-        // Game End
-        cout << "Enter Option (N: New Game, E: Exit & Save): ";
-        cin >> plrChce;
-        plrChce = static_cast<char>(toupper(plrChce));
-        while (plrChce != 78 && plrChce != 69) {
-            cout << "Invalid option. Enter New Option (N: New Game, E: Exit): ";
+        if (plrChps < 5 && plrCash < 5) {
+            cout << "You do not have enough cash or chips to continue playing. Game over.\n";
+            plrChce = 69;
+        } else {
+            // Game End
+            cout << "Enter Option (N: New Game, E: Exit & Save): ";
             cin >> plrChce;
             plrChce = static_cast<char>(toupper(plrChce));
+            while (plrChce != 78 && plrChce != 69) {
+                cout << "Invalid option. Enter New Option (N: New Game, E: Exit): ";
+                cin >> plrChce;
+                plrChce = static_cast<char>(toupper(plrChce));
+            }
+
+            if (plrChce == 78) {
+                if (plrCash >= 5) {
+                    cout << "Would you like to purchase more chips? (Y or N) (Current Amount: " << plrChps << "): ";
+                    cin >> plrChce;
+                    plrChce = static_cast<char>(toupper(plrChce));
+
+                    while (plrChce != 89 && plrChce != 78) {
+                        cout << "Invalid option. Enter New Option (Y or N): ";
+                        cin >> plrChce;
+                        plrChce = static_cast<char>(toupper(plrChce));
+                    }
+                    if (plrChce == 89) {
+                        cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << (
+                            plrCash >= 65'000
+                                ? "65,000]: "
+                                : plrCash >= 1000
+                                      ? to_string(plrCash / 1000) + "," + string(
+                                            3 - to_string(plrCash % 1000).length(), '0') +
+                                        to_string(plrCash % 1000) + "]: "
+                                      : to_string(plrCash) + "]: ");
+                        cin >> plrInpt;
+                        plrInpt = std::floor(plrInpt);
+
+                        // Verify purchased chip amount is a valid amount and that the player has enough cash
+                        while (plrInpt > (static_cast<float>(plrCash) <= 65'000.0f
+                                              ? static_cast<float>(plrCash)
+                                              : 65'000.0f) ||
+                               plrInpt <
+                               5.0f) {
+                            cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << (plrCash >= 65'000
+                                    ? "65,000]: "
+                                    : plrCash >= 1000
+                                          ? to_string(plrCash / 1000) +
+                                            "," + string(
+                                                3 - to_string(
+                                                    plrCash % 1000).
+                                                length(), '0') +
+                                            to_string(plrCash % 1000)
+                                            + "]: "
+                                          : to_string(
+                                                plrCash) + "]: ");
+                            cin >> plrInpt;
+                            plrInpt = std::floor(plrInpt);
+                        }
+                        plrChps += static_cast<unsigned short>(floor(plrInpt));
+                        plrCash -= static_cast<unsigned short>(floor(plrInpt));
+                    }
+                }
+
+                // Reset Variables
+                curDrwC = 0;
+                plrSplt = false;
+                plrDbDn = false;
+                gameSte = 0;
+                plrBet1 = 0;
+                plrBet2 = 0;
+                plrHnd1 = 0;
+                plrHnd2 = 0;
+                delCrd1 = 0;
+                delCrd2 = 0;
+            }
         }
     } while (plrChce != 69);
 
