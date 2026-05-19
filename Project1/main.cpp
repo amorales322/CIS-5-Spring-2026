@@ -75,18 +75,18 @@ int main(int argc, char **argv) {
         cin >> plrChce;
         plrChce = static_cast<char>(toupper(plrChce));
         while (plrChce != 89 && plrChce != 78) {
-            cout << "Invalid option. Enter New Option (Y or N): ";
+            cout << "Invalid option. Enter new option (Y or N): ";
             cin >> plrChce;
             plrChce = static_cast<char>(toupper(plrChce));
         }
         if (plrChce == 89) {
             sveFile >> plrStr;
             if (plrStr != "ValidSaveFile")
-                cout << "Save File has been corrupted. Starting new Save File.\n";
+                cout << "Save file has been corrupted. Starting new save file.\n";
             else {
                 sveFile >> plrCash >> plrWins >> plrLoss;
                 if (plrCash == 0) {
-                    cout << "No Cash Available. Restarting with $10,000.\n";
+                    cout << "No cash available. Restarting with $10,000.\n";
                     plrCash = 10'000;
                 }
             }
@@ -99,11 +99,11 @@ int main(int argc, char **argv) {
 
     // Purchase Chips
     cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << (plrCash >= 65'000
-            ? "65,000]: "
-            : plrCash >= 1000
-                  ? to_string(plrCash / 1000) + "," + string(3 - to_string(plrCash % 1000).length(), '0') +
-                    to_string(plrCash % 1000) + "]: "
-                  : to_string(plrCash) + "]: ");
+        ? "65,000]: "
+        : plrCash >= 1000
+              ? to_string(plrCash / 1000) + "," + string(3 - to_string(plrCash % 1000).length(), '0') +
+                to_string(plrCash % 1000) + "]: "
+              : to_string(plrCash) + "]: ");
     cin >> plrInpt;
     plrInpt = std::floor(plrInpt);
 
@@ -113,15 +113,15 @@ int main(int argc, char **argv) {
         cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << (plrCash >= 65'000
                                                                                    ? "65,000]: "
                                                                                    : plrCash >= 1000
-                                                                                           ? to_string(plrCash / 1000) +
-                                                                                               "," + string(
-                                                                                                   3 - to_string(
-                                                                                                       plrCash % 1000).
-                                                                                                   length(), '0') +
-                                                                                               to_string(plrCash % 1000)
-                                                                                               + "]: "
-                                                                                           : to_string(
-                                                                                                   plrCash) + "]: ");
+                                                                                       ? to_string(plrCash / 1000) +
+                                                                                           "," + string(
+                                                                                               3 - to_string(
+                                                                                                   plrCash % 1000).
+                                                                                               length(), '0') +
+                                                                                           to_string(plrCash % 1000)
+                                                                                           + "]: "
+                                                                                       : to_string(
+                                                                                           plrCash) + "]: ");
         cin >> plrInpt;
         plrInpt = std::floor(plrInpt);
     }
@@ -145,14 +145,14 @@ int main(int argc, char **argv) {
         // Verify player wager is valid amount and that the player has enough chips
         while (plrInpt > (static_cast<float>(plrChps) <= 10'000.0f ? static_cast<float>(plrChps) : 10'000.0f) || plrInpt
                < 5.0f) {
-            cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << (plrChps >= 10000
-                    ? "10,000]: "
-                    : plrChps >= 1000
-                          ? to_string(plrChps / 1000) + "," + string(
-                                3 - to_string(plrChps % 1000).length(),
-                                '0') +
-                            to_string(plrChps % 1000) + "]: "
-                          : to_string(plrChps) + "]: ");
+            cout << "Invalid amount. Enter new amount (Whole $ only) [$5 to $" << (plrChps >= 10000
+                ? "10,000]: "
+                : plrChps >= 1000
+                      ? to_string(plrChps / 1000) + "," + string(
+                            3 - to_string(plrChps % 1000).length(),
+                            '0') +
+                        to_string(plrChps % 1000) + "]: "
+                      : to_string(plrChps) + "]: ");
             cin >> plrInpt;
             plrInpt = std::floor(plrInpt);
         }
@@ -241,7 +241,7 @@ int main(int argc, char **argv) {
                 plrChce = static_cast<char>(toupper(plrChce));
 
                 while (plrChce != 89 && plrChce != 78) {
-                    cout << "Invalid option. Enter New Option (Y or N): ";
+                    cout << "Invalid option. Enter new option (Y or N): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
                 }
@@ -265,25 +265,25 @@ int main(int argc, char **argv) {
             plrChce = static_cast<char>(toupper(plrChce));
             if (plrSplt && plrDbDn) {
                 while (plrChce != 83 && plrChce != 68 && plrChce != 72) {
-                    cout << "Invalid Option. Enter New Option (S: Stand, H: Hit, D: Double Down): ";
+                    cout << "Invalid option. Enter new option (S: Stand, H: Hit, D: Double Down): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
                 }
             } else if (plrSplt && !plrDbDn) {
                 while (plrChce != 83 && plrChce != 72) {
-                    cout << "Invalid Option. Enter New Option (S: Stand, H: Hit): ";
+                    cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
                 }
             } else if (!plrSplt && plrDbDn) {
                 while (plrChce != 83 && plrChce != 68 && plrChce != 72 && plrChce != 88) {
-                    cout << "Invalid Option. Enter New Option (S: Stand, H: Hit, D: Double Down, X: Surrender): ";
+                    cout << "Invalid option. Enter new option (S: Stand, H: Hit, D: Double Down, X: Surrender): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
                 }
             } else {
                 while (plrChce != 83 && plrChce != 88 && plrChce != 72) {
-                    cout << "Invalid Option. Enter New Option (S: Stand, H: Hit, X: Surrender): ";
+                    cout << "Invalid option. Enter new option (S: Stand, H: Hit, X: Surrender): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
                 }
@@ -291,7 +291,6 @@ int main(int argc, char **argv) {
 
             switch (plrChce) {
                 case 'X':
-                    cout << "You have chosen to surrender your hand.\n";
                     gameSte = 5;
                     break;
                 case 'S':
@@ -361,7 +360,7 @@ int main(int argc, char **argv) {
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
                     while (plrChce != 83 && plrChce != 72) {
-                        cout << "Invalid Option. Enter New Option (S: Stand, H: Hit): ";
+                        cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
                     }
@@ -408,13 +407,13 @@ int main(int argc, char **argv) {
                 plrChce = static_cast<char>(toupper(plrChce));
                 if (plrDbDn) {
                     while (plrChce != 83 && plrChce != 68 && plrChce != 72) {
-                        cout << "Invalid Option. Enter New Option (S: Stand, H: Hit, D: Double Down): ";
+                        cout << "Invalid option. Enter new option (S: Stand, H: Hit, D: Double Down): ";
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
                     }
                 } else {
                     while (plrChce != 83 && plrChce != 72) {
-                        cout << "Invalid Option. Enter New Option (S: Stand, H: Hit): ";
+                        cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
                     }
@@ -488,7 +487,7 @@ int main(int argc, char **argv) {
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
                         while (plrChce != 83 && plrChce != 72) {
-                            cout << "Invalid Option. Enter New Option (S: Stand, H: Hit): ";
+                            cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
                             cin >> plrChce;
                             plrChce = static_cast<char>(toupper(plrChce));
                         }
@@ -572,7 +571,7 @@ int main(int argc, char **argv) {
                                                                        : "") << ", Dealer Hand: " << static_cast<int>(
             delCrd1 + delCrd2) << '\n';
         if (gameSte == 8) {
-            cout << "Dealer has gone bust, you win one times your wager" << (plrSplt ? " for both hands" : "") <<
+            cout << "Dealer has gone bust, you win 1x your wager" << (plrSplt ? " for both hands" : "") <<
                     "!.\n";
             plrChps += plrBet1 * 2 + plrBet2 * 2;
             plrWins++;
@@ -582,39 +581,39 @@ int main(int argc, char **argv) {
             plrLoss++;
         } else {
             if (gameSte % 10 == 1) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealers hand are both blackjack's." << (
-                    plrSplt ? " Your first hand is a push.\n" : "  Game ends in a push.\n");
+                cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (
+                    plrSplt ? " Your first hand is a push" : "  Game ends in a push") << ".\n";
                 plrChps += plrBet1;
             } else if (gameSte % 10 == 2) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack! " << (
+                cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (
                     plrSplt
-                        ? " You are paid 1.5 times your wager for your first hand!\n"
-                        : " You win 1.5x your wager!\n");
+                        ? " You win 1.5x your wager for your first hand"
+                        : " You win 1.5x your wager") << "!\n";
                 plrChps += plrBet1 + static_cast<unsigned short>(ceil(plrBet1 * 1.5f));
                 plrWins++;
             } else if (gameSte % 10 == 3) {
                 cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." <<
-                        (plrSplt ? "You lose your first hand.\n" : " You lose.\n");
+                        (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                 plrLoss++;
             } else if (gameSte % 10 == 7) {
                 cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (
-                    plrSplt ? "You lose your first hand.\n" : " You Lose.\n");
+                    plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                 plrLoss++;
             } else {
                 if (plrHnd1 > delCrd1 + delCrd2) {
                     cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt
-                            ? " You are paid 1x your wager for your first hand!\n"
-                            : " You win 1x your wager!\n");
+                        ? " You win 1x your wager for your first hand"
+                        : " You win 1x your wager") << "!\n";
                     plrChps += plrBet1 * 2;
                     plrWins++;
                 } else if (plrHnd1 == delCrd1 + delCrd2) {
                     cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt
-                            ? " Your first hand is a push.\n"
-                            : " Game ends in a push.\n");
+                        ? " Your first hand is a push"
+                        : " Game ends in a push") << ".\n";
                     plrChps += plrBet1;
                 } else {
                     cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (
-                        plrSplt ? " You lose your first hand.\n" : " You lose.\n");
+                        plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                     plrLoss++;
                 }
             }
@@ -622,17 +621,17 @@ int main(int argc, char **argv) {
             if (plrSplt) {
                 if (gameSte / 10 == 1) {
                     cout <<
-                            "Your second hand and the dealers hand are both blackjack's. Your second hand ends in a push.\n";
+                            "Your second hand and the dealer's hand are both blackjack's. Your second hand ends in a push.\n";
                     plrChps += plrBet2;
-                } else if (gameSte % 10 == 2) {
+                } else if (gameSte / 10 == 2) {
                     cout << "Your second hand is a blackjack! You win 1.5x your wager for your second hand!\n";
                     plrChps += plrBet2 + static_cast<unsigned short>(ceil(plrBet2 * 1.5f));
                     plrWins++;
-                } else if (gameSte % 10 == 3) {
+                } else if (gameSte / 10 == 3) {
                     cout <<
                             "The dealer's hand is a blackjack and your second hand is not. You lose your second hand.\n";
                     plrLoss++;
-                } else if (gameSte % 10 == 7) {
+                } else if (gameSte / 10 == 7) {
                     cout << "Your second hand has gone bust. You lose your second hand.\n";
                     plrLoss++;
                 } else {
@@ -663,7 +662,7 @@ int main(int argc, char **argv) {
             cin >> plrChce;
             plrChce = static_cast<char>(toupper(plrChce));
             while (plrChce != 78 && plrChce != 69) {
-                cout << "Invalid option. Enter New Option (N: New Game, E: Exit): ";
+                cout << "Invalid option. Enter new option (N: New Game, E: Exit): ";
                 cin >> plrChce;
                 plrChce = static_cast<char>(toupper(plrChce));
             }
@@ -675,7 +674,7 @@ int main(int argc, char **argv) {
                     plrChce = static_cast<char>(toupper(plrChce));
 
                     while (plrChce != 89 && plrChce != 78) {
-                        cout << "Invalid option. Enter New Option (Y or N): ";
+                        cout << "Invalid option. Enter new option (Y or N): ";
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
                     }
@@ -698,17 +697,17 @@ int main(int argc, char **argv) {
                                plrInpt <
                                5.0f) {
                             cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << (plrCash >= 65'000
-                                    ? "65,000]: "
-                                    : plrCash >= 1000
-                                          ? to_string(plrCash / 1000) +
-                                            "," + string(
-                                                3 - to_string(
-                                                    plrCash % 1000).
-                                                length(), '0') +
-                                            to_string(plrCash % 1000)
-                                            + "]: "
-                                          : to_string(
-                                                plrCash) + "]: ");
+                                ? "65,000]: "
+                                : plrCash >= 1000
+                                      ? to_string(plrCash / 1000) +
+                                        "," + string(
+                                            3 - to_string(
+                                                plrCash % 1000).
+                                            length(), '0') +
+                                        to_string(plrCash % 1000)
+                                        + "]: "
+                                      : to_string(
+                                            plrCash) + "]: ");
                             cin >> plrInpt;
                             plrInpt = std::floor(plrInpt);
                         }
@@ -728,6 +727,7 @@ int main(int argc, char **argv) {
                 plrHnd2 = 0;
                 delCrd1 = 0;
                 delCrd2 = 0;
+                cout << '\n';
             }
         }
     } while (plrChce != 69);
