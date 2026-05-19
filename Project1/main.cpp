@@ -35,9 +35,13 @@ int main(int argc, char **argv) {
     // Game Variables
     char plrChce{};
     float plrInpt{};
+    string plrStr{};
     char curDrwC{};
     bool plrSplt{false};
     bool plrDbDn{false};
+
+    fstream sveFile{"./blackjackSaveFile.txt", ios::in};
+    bool vldSveF{false};
 
     // 1s Place: Player Hand 1, 10s Place: Player Hand 2
     // States: 0: Default (continue), 1: Push (Player/Dealer Blackjack), 2: Player Blackjack, 3: Dealer Blackjack
@@ -65,6 +69,34 @@ int main(int argc, char **argv) {
     /*
      * Initialize Variables
      */
+
+    if (sveFile.is_open()) {
+        cout << "Save file has been detected, would you like to load your game save? (Y or N): ";
+        cin >> plrChce;
+        plrChce = static_cast<char>(toupper(plrChce));
+        while (plrChce != 89 && plrChce != 78) {
+            cout << "Invalid option. Enter New Option (Y or N): ";
+            cin >> plrChce;
+            plrChce = static_cast<char>(toupper(plrChce));
+        }
+        if (plrChce == 89) {
+            sveFile >> plrStr;
+            if (plrStr != "ValidSaveFile")
+                cout << "Save File has been corrupted. Starting new Save File.\n";
+            else {
+                sveFile >> plrCash >> plrWins >> plrLoss;
+                if (plrCash == 0) {
+                    cout << "No Cash Available. Restarting with $10,000.\n";
+                    plrCash = 10'000;
+                }
+            }
+            cout << "Player Statistics:\n* Wins: " << plrWins << "\n* Losses: " << plrLoss << "\n* Cash: " <<
+                    plrCash << "\n* Chips: " << plrChps << "\n";
+        }
+        sveFile.close();
+    }
+    sveFile.open("./blackjackSaveFile.txt", ios::out | ios::trunc);
+
     // Purchase Chips
     cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << (plrCash >= 65'000
             ? "65,000]: "
@@ -699,6 +731,14 @@ int main(int argc, char **argv) {
             }
         }
     } while (plrChce != 69);
+
+    // Save to Game File
+    plrCash += plrChps;
+    sveFile << "ValidSaveFile" << '\n';
+    sveFile << plrCash << '\n';
+    sveFile << plrWins << '\n';
+    sveFile << plrLoss << '\n';
+    sveFile.close();
 
     // Exit the Program
     return 0;
