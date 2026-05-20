@@ -558,7 +558,7 @@ int main(int argc, char **argv) {
 
                 if (delCrd1 + delCrd2 > 21)
                     gameSte = 8;
-                if (delCrd1 + delCrd2 == 21) {
+                else if (delCrd1 + delCrd2 == 21) {
                     // Updates gameSte variable based on if the player has a blackjack or not
                     gameSte = (gameSte % 10 == 2 ? gameSte / 10 + 1 : gameSte / 10 + 3);
                     gameSte = (gameSte / 10 == 2 ? gameSte % 10 + 10 : gameSte % 10 + 30);
