@@ -248,7 +248,7 @@ int main(int argc, char **argv) {
             // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
             plrDbDn = plrChps >= plrBet1;
 
-            cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit" 
+            cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit"
 				 << (plrDbDn ? ", D: Double Down" : "") << (!plrSplt ? ", X: Surrender" : "") << " -> ";
             cin >> plrChce;
             plrChce = static_cast<char>(toupper(plrChce));
@@ -292,6 +292,7 @@ int main(int argc, char **argv) {
                     cout << "You have chosen to double down and double your wager. ";
                     plrChps -= plrBet1;
                     plrBet1 *= 2;
+                    curDrwC = (rand() % 11) + 1;
                     switch (curDrwC) {
                         case 11:
                             if (plrHnd1 > 10) {
@@ -317,7 +318,7 @@ int main(int argc, char **argv) {
                     else
                         gameSte = 4;
                     break;
-                case 'H':
+                default:
                     curDrwC = (rand() % 11) + 1;
                     switch (curDrwC) {
                         case 11:
@@ -362,7 +363,7 @@ int main(int argc, char **argv) {
                         case 'S':
                             gameSte = 6;
                             break;
-                        case 'H':
+                        default:
                             curDrwC = (rand() % 11) + 1;
                             switch (curDrwC) {
                                 case 11:
@@ -396,7 +397,7 @@ int main(int argc, char **argv) {
                 // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
                 plrDbDn = plrChps >= plrBet2;
 
-                cout << "Enter Option (Player Hand 2: " << static_cast<int>(plrHnd2) << ", Dealer Hand: " << static_cast<int>(delCrd1) 
+                cout << "Enter Option (Player Hand 2: " << static_cast<int>(plrHnd2) << ", Dealer Hand: " << static_cast<int>(delCrd1)
 					<< ")\nS: Stand, H: Hit" << (plrDbDn ? ", D: Double Down" : "") << " -> ";
                 cin >> plrChce;
                 plrChce = static_cast<char>(toupper(plrChce));
@@ -425,6 +426,7 @@ int main(int argc, char **argv) {
                         cout << "You have chosen to double down and double your wager. ";
                         plrChps -= plrBet2;
                         plrBet2 *= 2;
+                        curDrwC = (rand() % 11) + 1;
                         switch (curDrwC) {
                             case 11:
                                 if (plrHnd2 > 10) {
@@ -450,7 +452,7 @@ int main(int argc, char **argv) {
                         else
                             gameSte += 40;
                         break;
-                    case 'H':
+                    default:
                         curDrwC = (rand() % 11) + 1;
                         switch (curDrwC) {
                             case 11:
@@ -493,7 +495,7 @@ int main(int argc, char **argv) {
                             case 'S':
                                 gameSte += 60;
                                 break;
-                            case 'H':
+                            default:
                                 curDrwC = (rand() % 11) + 1;
                                 switch (curDrwC) {
                                     case 11:
@@ -581,7 +583,7 @@ int main(int argc, char **argv) {
             plrLoss++;
         } else {
             if (gameSte % 10 == 1) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push" 
+                cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push"
 																															   : " Game ends in a push") << ".\n";
                 plrChps += plrBet1;
             } else if (gameSte % 10 == 2) {
