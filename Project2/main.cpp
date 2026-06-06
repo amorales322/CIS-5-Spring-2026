@@ -13,7 +13,7 @@
 #include <fstream>	 // File I/O Library
 #include <cctype>	 // Character Handling Library
 #include <string>	 // String Library
-
+#include <vector>    // Vector Library
 using namespace std;
 
 // User Libraries
@@ -22,7 +22,14 @@ using namespace std;
 // Science, Math, Conversions, Dimensions
 
 // Function Prototypes
-//
+bool isVldOp(const char &input, vector<char> vldOpts);
+
+int max(const int &a, const int &b);
+float max(const float &a, const float &b);
+
+int min(const int &a, const int &b);
+float min(const float &a, const float &b);
+
 // Execution begins here at main
 int main(int argc, char **argv) {
     // Set random number seed
@@ -78,11 +85,12 @@ int main(int argc, char **argv) {
         plrChce = static_cast<char>(toupper(plrChce));
 
         // Input validation
-        while (plrChce != 89 && plrChce != 78) {
-            cout << "Invalid option. Enter new option (Y or N): ";
+		while (!isVldOp(plrChce, vector<char>{'Y', 'N'})) {
+			cout << "Invalid option. Enter new option (Y or N): ";
             cin >> plrChce;
             plrChce = static_cast<char>(toupper(plrChce));
-        }
+	
+		}
         if (plrChce == 89) {
             sveFile >> plrStr;
             // Checks if string marker is inside the save file, which determines if the save file is valid or corrupted
@@ -111,8 +119,7 @@ int main(int argc, char **argv) {
     plrInpt = floor(plrInpt);
 
     // Verify purchased chip amount is a valid amount and that the player has enough cash
-    while (plrInpt > (static_cast<float>(plrCash) <= 65'000.0f ? static_cast<float>(plrCash) : 65'000.0f) || plrInpt <
-           5.0f) {
+    while (plrInpt > min(static_cast<float>(plrCash), 65'000.0f) || plrInpt < 5.0f) {
         cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << (plrCash >= 65'000 ? "65,000]: "
 	            : plrCash >= 1000 ? to_string(plrCash / 1000) + "," + string(3 - to_string(plrCash % 1000).length(), '0') + to_string(plrCash % 1000) + "]: "
     	        : to_string(plrCash) + "]: ");
@@ -132,7 +139,7 @@ int main(int argc, char **argv) {
         plrInpt = floor(plrInpt);
 
         // Verify player wager is valid amount and that the player has enough chips
-        while (plrInpt > (static_cast<float>(plrChps) <= 10'000.0f ? static_cast<float>(plrChps) : 10'000.0f) || plrInpt
+        while (plrInpt > min(static_cast<float>(plrChps), 10'000.0f) || plrInpt
                < 5.0f) {
             cout << "Invalid amount. Enter new amount (Whole $ only) [$5 to $" << (plrChps >= 10000 ? "10,000]: "
                     : plrChps >= 1000 ? to_string(plrChps / 1000) + "," + string(3 - to_string(plrChps % 1000).length(), '0') + to_string(plrChps % 1000) + "]: "
@@ -228,7 +235,7 @@ int main(int argc, char **argv) {
                 plrChce = static_cast<char>(toupper(plrChce));
 
                 // Input validation
-                while (plrChce != 89 && plrChce != 78) {
+                while (!isVldOp(plrChce, vector<char>{'Y', 'N'})) {
                     cout << "Invalid option. Enter new option (Y or N): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
@@ -255,25 +262,25 @@ int main(int argc, char **argv) {
 
             // Input validation based on game flags and whether the player split their cards and can double down
             if (plrSplt && plrDbDn) {
-                while (plrChce != 83 && plrChce != 68 && plrChce != 72) {
+                while (!isVldOp(plrChce, vector<char>{'S', 'D', 'H'})) {
                     cout << "Invalid option. Enter new option (S: Stand, H: Hit, D: Double Down): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
                 }
             } else if (plrSplt && !plrDbDn) {
-                while (plrChce != 83 && plrChce != 72) {
+                while (!isVldOp(plrChce, vector<char>{'S', 'H'})) {
                     cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
                 }
             } else if (!plrSplt && plrDbDn) {
-                while (plrChce != 83 && plrChce != 68 && plrChce != 72 && plrChce != 88) {
+                while (!isVldOp(plrChce, vector<char>{'S', 'H', 'D', 'X'})) {
                     cout << "Invalid option. Enter new option (S: Stand, H: Hit, D: Double Down, X: Surrender): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
                 }
             } else {
-                while (plrChce != 83 && plrChce != 88 && plrChce != 72) {
+                while (!isVldOp(plrChce, vector<char>{'S', 'H', 'X'})) { 
                     cout << "Invalid option. Enter new option (S: Stand, H: Hit, X: Surrender): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
@@ -353,7 +360,7 @@ int main(int argc, char **argv) {
                     plrChce = static_cast<char>(toupper(plrChce));
 
                     // Input validation
-                    while (plrChce != 83 && plrChce != 72) {
+                    while (!isVldOp(plrChce, vector<char>{'S', 'H'})) { 
                         cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
@@ -404,13 +411,13 @@ int main(int argc, char **argv) {
 
                 // Input validation based on if the player can double down or not
                 if (plrDbDn) {
-                    while (plrChce != 83 && plrChce != 68 && plrChce != 72) {
+                    while (!isVldOp(plrChce, vector<char>{'S', 'H', 'D'})) {
                         cout << "Invalid option. Enter new option (S: Stand, H: Hit, D: Double Down): ";
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
                     }
                 } else {
-                    while (plrChce != 83 && plrChce != 72) {
+                    while (!isVldOp(plrChce, vector<char>{'S', 'H'})) {
                         cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
@@ -658,7 +665,7 @@ int main(int argc, char **argv) {
             plrChce = static_cast<char>(toupper(plrChce));
 
             // Input validation
-            while (plrChce != 78 && plrChce != 69) {
+            while (!isVldOp(plrChce, vector<char>{'N', 'E'})) {
                 cout << "Invalid option. Enter new option (N: New Game, E: Exit): ";
                 cin >> plrChce;
                 plrChce = static_cast<char>(toupper(plrChce));
@@ -671,7 +678,7 @@ int main(int argc, char **argv) {
                     plrChce = static_cast<char>(toupper(plrChce));
 
                     // Input validation
-                    while (plrChce != 89 && plrChce != 78) {
+                    while (!isVldOp(plrChce, vector<char>{'Y', 'N'})) {
                         cout << "Invalid option. Enter new option (Y or N): ";
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
@@ -684,7 +691,7 @@ int main(int argc, char **argv) {
                         plrInpt = floor(plrInpt);
 
                         // Verify purchased chip amount is a valid amount and that the player has enough cash
-                        while (plrInpt > (static_cast<float>(plrCash) <= 65'000.0f ? static_cast<float>(plrCash) : 65'000.0f) || plrInpt < 5.0f) {
+                        while (plrInpt > min(static_cast<float>(plrCash), 65'000.0f) || plrInpt < 5.0f) {
                             cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << (plrCash >= 65'000 ? "65,000]: "
                                     : plrCash >= 1000 ? to_string(plrCash / 1000) + "," + string(3 - to_string(plrCash % 1000).length(), '0') +to_string(plrCash % 1000) + "]: "
                                     : to_string(plrCash) + "]: ");
@@ -722,4 +729,65 @@ int main(int argc, char **argv) {
 
     // Exit the Program
     return 0;
+}
+
+// Functions
+
+bool isVldOp(const char &input, vector<char> vldOpts) {
+
+	// Bubble Sort
+	bool isChng{false};
+	char temp{};
+	do {
+		isChng = false;
+		for (int i{0}; i < vldOpts.size() - 1; i++) {
+			if (vldOpts[i] > vldOpts[i + 1]) {
+				temp = vldOpts[i];
+				vldOpts[i] = vldOpts[i + 1];
+				vldOpts[i + 1] = temp;
+				isChng = true;
+			}
+		}	
+	} while (isChng);
+
+	// Binary Search
+	int left{0};
+	int middle{};
+	int right{static_cast<int>(vldOpts.size() - 1)};
+
+	while (left <= right) {
+		middle = left + (right - left) / 2;
+
+		if (input == vldOpts[middle])
+			return true;
+		if (input < vldOpts[middle])
+			right = middle - 1;
+		if (input  > vldOpts[middle])
+			left = middle + 1;
+	}
+	return false;
+}
+
+int max(const int &a, const int &b) {
+	if (a >= b)
+		return a;
+	return b;
+}
+
+float max(const float &a, const float &b) {
+	if (a >= b)
+		return a;
+	return b;
+}
+
+int min(const int &a, const int &b) {
+	if (a <= b)
+		return a;
+	return b;
+}
+
+float min(const float &a, const float &b) {
+	if (a <= b)
+		return a;
+	return b;
 }
