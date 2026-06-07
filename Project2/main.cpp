@@ -40,6 +40,8 @@ void genShoe(char shoe[]);
 
 char drawCrd();
 
+string appHand(vector<char> &hand, const char &card);
+
 // Execution begins here at main
 int main(int argc, char **argv) {
     // Set random number seed
@@ -822,4 +824,68 @@ char drawCrd() {
     if (deckIdx == 0)
         genShoe(shoe);
     return shoe[deckIdx++];
+}
+
+
+string appHand(vector<char> &hand, const char &card) {
+    string crdOut{};
+
+    hand.push_back(card);
+    // If a King Card
+    if (card % 13 == 0) {
+        hand[0] += 10;
+        hand[1] += 10;
+        switch (card / 13) {
+            case 1:
+                return "King of Spades";
+            case 2:
+                return "King of Hearts";
+            case 3:
+                return "King of Diamonds";
+            case 4:
+                return "King of Clubs";
+            default:
+                exit(1);
+        }
+    } else {
+        // All Other Cards
+        switch (card % 13) {
+            case 1:
+                hand[0] += 11;
+                hand[1] += 1;
+                crdOut += "Ace";
+                break;
+            case 11:
+                hand[0] += 10;
+                hand[1] += 10;
+                crdOut += "Jack";
+                break;
+            case 12:
+                hand[0] += 10;
+                hand[1] += 10;
+                crdOut += "Queen";
+                break;
+            default:
+                hand[0] += card % 13;
+                hand[1] += card % 13;
+                crdOut += to_string(card % 13);
+        }
+        switch (card / 13) {
+            case 0:
+                crdOut += " of Spades";
+                break;
+            case 1:
+                crdOut += " of Hearts";
+                break;
+            case 2:
+                crdOut += " of Diamonds";
+                break;
+            case 3:
+                crdOut += " of Clubs";
+                break;
+            default:
+                exit(1);
+        }
+    }
+    return crdOut;
 }
