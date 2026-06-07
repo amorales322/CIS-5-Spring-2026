@@ -34,6 +34,12 @@ int min(const int &a, const int &b);
 
 float min(const float &a, const float &b);
 
+string fmtNum(const int &number);
+
+void genShoe(char shoe[]);
+
+char drawCrd();
+
 // Execution begins here at main
 int main(int argc, char **argv) {
     // Set random number seed
@@ -106,8 +112,7 @@ int main(int argc, char **argv) {
                     plrCash = 10'000;
                 }
             }
-            cout << "Player Statistics:\n* Wins: " << plrWins << "\n* Losses: " << plrLoss << "\n* Cash: " <<
-                    plrCash << "\n* Chips: " << plrChps << "\n";
+            cout << "Player Statistics:\n* Wins: " << plrWins << "\n* Losses: " << plrLoss << "\n* Cash: " << plrCash << "\n* Chips: " << plrChps << "\n";
         }
         sveFile.close();
     }
@@ -115,29 +120,13 @@ int main(int argc, char **argv) {
     sveFile.open("./blackjackSaveFile.txt", ios::out | ios::trunc);
 
     // Purchase Chips
-    cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << (plrCash >= 65'000
-            ? "65,000]: "
-            : plrCash >= 1000
-                  ? to_string(plrCash / 1000) + "," + string(3 - to_string(plrCash % 1000).length(), '0') + to_string(
-                        plrCash % 1000) + "]: "
-                  : to_string(plrCash) + "]: ");
+    cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
     cin >> plrInpt;
     plrInpt = floor(plrInpt);
 
     // Verify purchased chip amount is a valid amount and that the player has enough cash
     while (!inRange(plrInpt, 5.0f, min(static_cast<float>(plrCash), 65'000.0f))) {
-        cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << (plrCash >= 65'000
-                                                                                   ? "65,000]: "
-                                                                                   : plrCash >= 1000
-                                                                                           ? to_string(plrCash / 1000) +
-                                                                                               "," + string(
-                                                                                                   3 - to_string(
-                                                                                                       plrCash % 1000).
-                                                                                                   length(), '0') +
-                                                                                               to_string(plrCash % 1000)
-                                                                                               + "]: "
-                                                                                           : to_string(
-                                                                                                   plrCash) + "]: ");
+        cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
         cin >> plrInpt;
         plrInpt = floor(plrInpt);
     }
@@ -147,25 +136,13 @@ int main(int argc, char **argv) {
     // Game Loop
     do {
         // Get player wager
-        cout << "Enter wager amount (Whole $ only) [$5 to $" << (plrChps >= 10000
-                                                                     ? "10,000]: "
-                                                                     : plrChps >= 1000
-                                                                           ? to_string(plrChps / 1000) + "," + string(
-                                                                                 3 - to_string(plrChps % 1000).length(),
-                                                                                 '0') + to_string(plrChps % 1000) +
-                                                                             "]: "
-                                                                           : to_string(plrChps) + "]: ");
+        cout << "Enter wager amount (Whole $ only) [$5 to $" << fmtNum(min(plrChps, 10'000)) << "]: ";
         cin >> plrInpt;
         plrInpt = floor(plrInpt);
 
         // Verify player wager is valid amount and that the player has enough chips
         while (!inRange(plrInpt, 5.0f, min(static_cast<float>(plrChps), 10'000.0f))) {
-            cout << "Invalid amount. Enter new amount (Whole $ only) [$5 to $" << (plrChps >= 10000
-                    ? "10,000]: "
-                    : plrChps >= 1000
-                          ? to_string(plrChps / 1000) + "," + string(3 - to_string(plrChps % 1000).length(), '0') +
-                            to_string(plrChps % 1000) + "]: "
-                          : to_string(plrChps) + "]: ");
+            cout << "Invalid amount. Enter new amount (Whole $ only) [$5 to $" << fmtNum(min(plrChps, 10'000)) << "]: ";
             cin >> plrInpt;
             plrInpt = floor(plrInpt);
         }
@@ -277,9 +254,7 @@ int main(int argc, char **argv) {
             // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
             plrDbDn = plrChps >= plrBet1;
 
-            cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " << static_cast<
-                        int>(delCrd1) << ")\nS: Stand, H: Hit"
-                    << (plrDbDn ? ", D: Double Down" : "") << (!plrSplt ? ", X: Surrender" : "") << " -> ";
+            cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit" << (plrDbDn ? ", D: Double Down" : "") << (!plrSplt ? ", X: Surrender" : "") << " -> ";
             cin >> plrChce;
             plrChce = static_cast<char>(toupper(plrChce));
 
@@ -370,15 +345,16 @@ int main(int argc, char **argv) {
                     }
                     if (plrHnd1 > 21)
                         gameSte = 7;
-                    else if (plrHnd1 == 21)
-                        gameSte = 2;
+                    else {
+                        if (plrHnd1 == 21)
+                            gameSte = 2;
+                    }
                     break;
             }
 
             if (gameSte == 0) {
                 do {
-                    cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " <<
-                            static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit -> ";
+                    cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit -> ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
 
@@ -427,9 +403,7 @@ int main(int argc, char **argv) {
                 // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
                 plrDbDn = plrChps >= plrBet2;
 
-                cout << "Enter Option (Player Hand 2: " << static_cast<int>(plrHnd2) << ", Dealer Hand: " << static_cast
-                        <int>(delCrd1)
-                        << ")\nS: Stand, H: Hit" << (plrDbDn ? ", D: Double Down" : "") << " -> ";
+                cout << "Enter Option (Player Hand 2: " << static_cast<int>(plrHnd2) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit" << (plrDbDn ? ", D: Double Down" : "") << " -> ";
                 cin >> plrChce;
                 plrChce = static_cast<char>(toupper(plrChce));
 
@@ -512,8 +486,7 @@ int main(int argc, char **argv) {
 
                 if (gameSte / 10 == 0) {
                     do {
-                        cout << "Enter Option (Player Hand 2: " << static_cast<int>(plrHnd2) << ", Dealer Hand: " <<
-                                static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit -> ";
+                        cout << "Enter Option (Player Hand 2: " << static_cast<int>(plrHnd2) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit -> ";
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
                         while (plrChce != 83 && plrChce != 72) {
@@ -557,8 +530,7 @@ int main(int argc, char **argv) {
             }
 
             // Checks if the player's hand(s) have already gone bust or not
-            if (gameSte != 5 && !((!plrSplt && gameSte % 10 == 7) || (
-                                      gameSte % 10 == 7 && plrSplt && gameSte / 10 == 7))) {
+            if (gameSte != 5 && !((!plrSplt && gameSte % 10 == 7) || (gameSte % 10 == 7 && plrSplt && gameSte / 10 == 7))) {
                 /*
                  * Dealer's turn
                  */
@@ -585,8 +557,7 @@ int main(int argc, char **argv) {
                             cout << "The dealer draws another card and it is a 10/face card.\n";
                             break;
                         default:
-                            cout << "The dealer draws another card and it is a(n) " << static_cast<int>(delCrd2) <<
-                                    " card.\n";
+                            cout << "The dealer draws another card and it is a(n) " << static_cast<int>(delCrd2) << " card.\n";
                     }
                 }
 
@@ -600,15 +571,11 @@ int main(int argc, char **argv) {
             }
         }
 
-        cout << "Player Hand 1: " << static_cast<int>(plrHnd1) << (plrHnd2 != 0
-                                                                       ? ", Player Hand 2: " + to_string(plrHnd2)
-                                                                       : "") << ", Dealer Hand: " << static_cast<int>(
-            delCrd1 + delCrd2) << '\n';
+        cout << "Player Hand 1: " << static_cast<int>(plrHnd1) << (plrHnd2 != 0 ? ", Player Hand 2: " + to_string(plrHnd2) : "") << ", Dealer Hand: " << static_cast<int>(delCrd1 + delCrd2) << '\n';
 
         // Game payout/ending
         if (gameSte == 8) {
-            cout << "Dealer has gone bust, you win 1x your wager" << (plrSplt ? " for both hands" : "") <<
-                    "!.\n";
+            cout << "Dealer has gone bust, you win 1x your wager" << (plrSplt ? " for both hands" : "") << "!.\n";
             plrChps += plrBet1 * 2 + plrBet2 * 2;
             plrWins++;
         } else if (gameSte == 5) {
@@ -617,64 +584,49 @@ int main(int argc, char **argv) {
             plrLoss++;
         } else {
             if (gameSte % 10 == 1) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (
-                    plrSplt
-                        ? " Your first hand is a push"
-                        : " Game ends in a push") << ".\n";
+                cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") << ".\n";
                 plrChps += plrBet1;
             } else if (gameSte % 10 == 2) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (plrSplt
-                        ? " You win 1.5x your wager for your first hand"
-                        : " You win 1.5x your wager") << "!\n";
+                cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (plrSplt ? " You win 1.5x your wager for your first hand" : " You win 1.5x your wager") << "!\n";
                 plrChps += plrBet1 + static_cast<unsigned short>(ceil(plrBet1 * 1.5f));
                 plrWins++;
             } else if (gameSte % 10 == 3) {
-                cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." <<
-                        (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
+                cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                 plrLoss++;
             } else if (gameSte % 10 == 7) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (
-                    plrSplt ? " You lose your first hand" : " You lose") << ".\n";
+                cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                 plrLoss++;
             } else {
                 if (plrHnd1 > delCrd1 + delCrd2) {
-                    cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt
-                            ? " You win 1x your wager for your first hand"
-                            : " You win 1x your wager") << "!\n";
+                    cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand" : " You win 1x your wager") << "!\n";
                     plrChps += plrBet1 * 2;
                     plrWins++;
                 } else if (plrHnd1 == delCrd1 + delCrd2) {
-                    cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt
-                            ? " Your first hand is a push"
-                            : " Game ends in a push") << ".\n";
+                    cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") << ".\n";
                     plrChps += plrBet1;
                 } else {
-                    cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (
-                        plrSplt ? " You lose your first hand" : " You lose") << ".\n";
+                    cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                     plrLoss++;
                 }
             }
 
             if (plrSplt) {
                 if (gameSte / 10 == 1) {
-                    cout <<
-                            "Your second hand and the dealer's hand are both blackjack's. Your second hand ends in a push.\n";
+                    cout << "Your second hand and the dealer's hand are both blackjack's. Your second hand ends in a push.\n";
                     plrChps += plrBet2;
                 } else if (gameSte / 10 == 2) {
                     cout << "Your second hand is a blackjack! You win 1.5x your wager for your second hand!\n";
                     plrChps += plrBet2 + static_cast<unsigned short>(ceil(plrBet2 * 1.5f));
                     plrWins++;
                 } else if (gameSte / 10 == 3) {
-                    cout <<
-                            "The dealer's hand is a blackjack and your second hand is not. You lose your second hand.\n";
+                    cout << "The dealer's hand is a blackjack and your second hand is not. You lose your second hand.\n";
                     plrLoss++;
                 } else if (gameSte / 10 == 7) {
                     cout << "Your second hand has gone bust. You lose your second hand.\n";
                     plrLoss++;
                 } else {
                     if (plrHnd2 > delCrd1 + delCrd2) {
-                        cout <<
-                                "Your first hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
+                        cout << "Your first hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
                         plrChps += plrBet2 * 2;
                         plrWins++;
                     } else if (plrHnd2 == delCrd1 + delCrd2) {
@@ -687,8 +639,7 @@ int main(int argc, char **argv) {
                 }
             }
         }
-        cout << "Player Statistics:\n* Wins: " << plrWins << "\n* Losses: " << plrLoss << "\n* Cash: " <<
-                plrCash << "\n* Chips: " << plrChps << "\n";
+        cout << "Player Statistics:\n* Wins: " << plrWins << "\n* Losses: " << plrLoss << "\n* Cash: " << plrCash << "\n* Chips: " << plrChps << "\n";
 
         // Checks if the player has enough chips and cash to continue playing
         if (plrChps < 5 && plrCash < 5) {
@@ -720,26 +671,13 @@ int main(int argc, char **argv) {
                         plrChce = static_cast<char>(toupper(plrChce));
                     }
                     if (plrChce == 89) {
-                        cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << (
-                            plrCash >= 65'000
-                                ? "65,000]: "
-                                : plrCash >= 1000
-                                      ? to_string(plrCash / 1000) + "," + string(
-                                            3 - to_string(plrCash % 1000).length(),
-                                            '0') + to_string(plrCash % 1000) + "]: "
-                                      : to_string(plrCash) + "]: ");
+                        cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
                         cin >> plrInpt;
                         plrInpt = floor(plrInpt);
 
                         // Verify purchased chip amount is a valid amount and that the player has enough cash
                         while (!inRange(plrInpt, 5.0f, min(static_cast<float>(plrCash), 65'000.0f))) {
-                            cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << (plrCash >= 65'000
-                                    ? "65,000]: "
-                                    : plrCash >= 1000
-                                          ? to_string(plrCash / 1000) + "," + string(
-                                                3 - to_string(plrCash % 1000).length(),
-                                                '0') + to_string(plrCash % 1000) + "]: "
-                                          : to_string(plrCash) + "]: ");
+                            cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
                             cin >> plrInpt;
                             plrInpt = floor(plrInpt);
                         }
@@ -838,4 +776,48 @@ float min(const float &a, const float &b) {
     if (a <= b)
         return a;
     return b;
+}
+
+string fmtNum(const int &number) {
+    string strNum{to_string(abs(number))};
+    int numLen{static_cast<int>(strNum.length())};
+    string output{number < 0 ? "-" : "" + strNum.substr(0, numLen % 3)};
+    for (int i{0}; i < numLen / 3; i++) {
+        if (i == 0) {
+            if (numLen % 3 != 0)
+                output += ",";
+        } else
+            output += ",";
+        output += strNum.substr(i * 3 + numLen % 3, 3);
+    }
+    return output;
+}
+
+void genShoe(char shoe[]) {
+    char temp;
+
+    for (int i{0}; i < 8; i++) {
+        for (int j{0}; j < 52; j++)
+            shoe[(i * 52) + j] = j + 1;
+    }
+    // Iterate over deck 128 times and randomize cards every iteration
+    for (int i{0}; i < 128; i++) {
+        for (int j{0}; j < 415; j++) {
+            if (rand() % 2 == 0) {
+                temp = shoe[j];
+                shoe[j] = shoe[j + 1];
+                shoe[j + 1] = temp;
+            }
+        }
+    }
+}
+
+char drawCrd() {
+    static unsigned short deckIdx{0};
+    static char shoe[416];
+    if (deckIdx >= 416)
+        deckIdx = 0;
+    if (deckIdx == 0)
+        genShoe(shoe);
+    return shoe[deckIdx++];
 }
