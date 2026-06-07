@@ -73,8 +73,10 @@ int main(int argc, char **argv) {
     unsigned short plrBet1{}; // Wager for first player hand
     unsigned short plrBet2{}; // Wager for second player hand
 
-    unsigned short plrWins{0}; // Player Statistics - Wins
-    unsigned short plrLoss{0}; // Player Statistics - Losses
+    // Player Statistics
+    // 1. Wins
+    // 2. Losses
+    unsigned short plrStat[2] = {0, 0};
 
     // Player Hands
     char plrHnd1{}; // Player Hand 1
@@ -106,13 +108,13 @@ int main(int argc, char **argv) {
             if (plrStr != "ValidSaveFile")
                 cout << "Save file has been corrupted. Starting new save file.\n";
             else {
-                sveFile >> plrCash >> plrWins >> plrLoss;
+                sveFile >> plrCash >> plrStat[0] >> plrStat[1];
                 if (plrCash == 0) {
                     cout << "No cash available. Restarting with $10,000.\n";
                     plrCash = 10'000;
                 }
             }
-            cout << "Player Statistics:\n* Wins: " << plrWins << "\n* Losses: " << plrLoss << "\n* Cash: " << plrCash << "\n* Chips: " << plrChps << "\n";
+            cout << "Player Statistics:\n* Wins: " << plrStat[0] << "\n* Losses: " << plrStat[1] << "\n* Cash: " << plrCash << "\n* Chips: " << plrChps << "\n";
         }
         sveFile.close();
     }
@@ -577,11 +579,11 @@ int main(int argc, char **argv) {
         if (gameSte == 8) {
             cout << "Dealer has gone bust, you win 1x your wager" << (plrSplt ? " for both hands" : "") << "!.\n";
             plrChps += plrBet1 * 2 + plrBet2 * 2;
-            plrWins++;
+            plrStat[0]++;
         } else if (gameSte == 5) {
             cout << "You have chose to surrender your hand, you receive half your original bet back.\n";
             plrChps += static_cast<unsigned short>(floor(plrBet1 / 2));
-            plrLoss++;
+            plrStat[1]++;
         } else {
             if (gameSte % 10 == 1) {
                 cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") << ".\n";
@@ -589,24 +591,24 @@ int main(int argc, char **argv) {
             } else if (gameSte % 10 == 2) {
                 cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (plrSplt ? " You win 1.5x your wager for your first hand" : " You win 1.5x your wager") << "!\n";
                 plrChps += plrBet1 + static_cast<unsigned short>(ceil(plrBet1 * 1.5f));
-                plrWins++;
+                plrStat[0]++;
             } else if (gameSte % 10 == 3) {
                 cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
-                plrLoss++;
+                plrStat[1]++;
             } else if (gameSte % 10 == 7) {
                 cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
-                plrLoss++;
+                plrStat[1]++;
             } else {
                 if (plrHnd1 > delCrd1 + delCrd2) {
                     cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand" : " You win 1x your wager") << "!\n";
                     plrChps += plrBet1 * 2;
-                    plrWins++;
+                    plrStat[0]++;
                 } else if (plrHnd1 == delCrd1 + delCrd2) {
                     cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") << ".\n";
                     plrChps += plrBet1;
                 } else {
                     cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
-                    plrLoss++;
+                    plrStat[1]++;
                 }
             }
 
@@ -617,29 +619,29 @@ int main(int argc, char **argv) {
                 } else if (gameSte / 10 == 2) {
                     cout << "Your second hand is a blackjack! You win 1.5x your wager for your second hand!\n";
                     plrChps += plrBet2 + static_cast<unsigned short>(ceil(plrBet2 * 1.5f));
-                    plrWins++;
+                    plrStat[0]++;
                 } else if (gameSte / 10 == 3) {
                     cout << "The dealer's hand is a blackjack and your second hand is not. You lose your second hand.\n";
-                    plrLoss++;
+                    plrStat[1]++;
                 } else if (gameSte / 10 == 7) {
                     cout << "Your second hand has gone bust. You lose your second hand.\n";
-                    plrLoss++;
+                    plrStat[1]++;
                 } else {
                     if (plrHnd2 > delCrd1 + delCrd2) {
                         cout << "Your first hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
                         plrChps += plrBet2 * 2;
-                        plrWins++;
+                        plrStat[0]++;
                     } else if (plrHnd2 == delCrd1 + delCrd2) {
                         cout << "Your second hand is equal to the dealer's hand. Your second hand is a push.\n";
                         plrChps += plrBet2;
                     } else {
                         cout << "Your second hand is smaller than the dealer's hand. You lose your second hand.\n";
-                        plrLoss++;
+                        plrStat[1]++;
                     }
                 }
             }
         }
-        cout << "Player Statistics:\n* Wins: " << plrWins << "\n* Losses: " << plrLoss << "\n* Cash: " << plrCash << "\n* Chips: " << plrChps << "\n";
+        cout << "Player Statistics:\n* Wins: " << plrStat[0] << "\n* Losses: " << plrStat[1] << "\n* Cash: " << plrCash << "\n* Chips: " << plrChps << "\n";
 
         // Checks if the player has enough chips and cash to continue playing
         if (plrChps < 5 && plrCash < 5) {
@@ -706,8 +708,8 @@ int main(int argc, char **argv) {
     plrCash += plrChps;
     sveFile << "ValidSaveFile" << '\n';
     sveFile << plrCash << '\n';
-    sveFile << plrWins << '\n';
-    sveFile << plrLoss << '\n';
+    sveFile << plrStat[0] << '\n';
+    sveFile << plrStat[1] << '\n';
     sveFile.close();
 
     // Exit the Program
