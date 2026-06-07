@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
 
     // Player Variables/Statistics
     unsigned int plrCash{10000}; // Player Cash
-    unsigned short plrChps{}; // Player Casino Chips
+    unsigned int plrChps{}; // Player Casino Chips
 
     unsigned short plrBet1{}; // Wager for first player hand
     unsigned short plrBet2{}; // Wager for second player hand
@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
         cin >> plrInpt;
         plrInpt = floor(plrInpt);
     }
-    plrChps = static_cast<unsigned short>(floor(plrInpt));
+    plrChps = static_cast<unsigned int>(floor(plrInpt));
     plrCash -= plrChps;
 
     // Game Loop
