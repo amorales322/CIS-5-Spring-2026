@@ -42,6 +42,10 @@ char drawCrd();
 
 string appHand(vector<char> &hand, const char &card);
 
+char popBkHnd(vector<char> &hand);
+
+string outHndT(const char &total1, const char &total2);
+
 // Execution begins here at main
 int main(int argc, char **argv) {
     // Set random number seed
@@ -66,27 +70,30 @@ int main(int argc, char **argv) {
      * States: 0: Default (continue), 1: Push (Player/Dealer Blackjack), 2: Player Blackjack, 3: Dealer Blackjack
      * 4: Double Down, 5: Surrender, 6: Stand, 7: Player Bust, 8: Dealer Bust
      */
-    char gameSte{00};
+    char gameSte[2]{0, 0};
+    // char gameSte{00};
 
     // Player Variables/Statistics
     unsigned int plrCash{10000}; // Player Cash
     unsigned int plrChps{}; // Player Casino Chips
 
-    unsigned short plrBet1{}; // Wager for first player hand
-    unsigned short plrBet2{}; // Wager for second player hand
+    unsigned short plrWger[2]{0, 0};
+    // unsigned short plrBet1{}; // Wager for first player hand
+    // unsigned short plrBet2{}; // Wager for second player hand
 
     // Player Statistics
     // 1. Wins
     // 2. Losses
-    unsigned short plrStat[2] = {0, 0};
+    unsigned short plrStat[2]{0, 0};
 
     // Player Hands
-    char plrHnd1{}; // Player Hand 1
-    char plrHnd2{}; // Player Hand 2
+    vector<char> plrHnd1{0, 0}; // Player Hand 1
+    vector<char> plrHnd2{0, 0}; // Player Hand 2
 
     // Dealer Hand/Cards
-    char delCrd1{}; // Dealer Hand/Card 1
-    char delCrd2{}; // Dealer Card 2
+    vector<char> delHand{0, 0};
+    // char delCrd1{}; // Dealer Hand/Card 1
+    // char delCrd2{}; // Dealer Card 2
 
     /*
      * Initialize Variables
@@ -151,88 +158,48 @@ int main(int argc, char **argv) {
             plrInpt = floor(plrInpt);
         }
 
-        plrBet1 = static_cast<unsigned short>(floor(plrInpt));
-        plrChps -= plrBet1;
+        plrWger[0] = static_cast<unsigned short>(floor(plrInpt));
+        plrChps -= plrWger[0];
 
         //
         // Player Card Drawing
         //
 
         // Draw first player card
-        plrHnd1 = (rand() % 11) + 1;
-        switch (plrHnd1) {
-            case 11:
-                cout << "Your first card is an ace.\n";
-                break;
-            case 10:
-                cout << "Your first card is a 10/face card.\n";
-                break;
-            default:
-                cout << "Your first card is a(n) " << static_cast<int>(plrHnd1) << " card.\n";
-        }
+        cout << "Your first card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
 
         // Draw second player card
-        curDrwC = (rand() % 11) + 1;
-        switch (curDrwC) {
-            case 11:
-                if (plrHnd1 == 11) {
-                    cout << "Your second card is an ace, counted with a value of 1.\n";
-                    plrHnd1++;
-                } else {
-                    cout << "Your second card is an ace.\n";
-                    plrHnd1 += curDrwC;
-                }
-                break;
-            case 10:
-                cout << "Your second card is a 10/face card.\n";
-                // Determines if the two drawn cards are pairs, and updates the plrSplt flag accordingly
-                plrSplt = plrHnd1 == curDrwC;
-                plrHnd1 += curDrwC;
-                break;
-            default:
-                cout << "Your second card is a(n) " << static_cast<int>(curDrwC) << " card.\n";
-                // Determines if the two drawn cards are pairs, and updates the plrSplt flag accordingly
-                plrSplt = plrHnd1 == curDrwC;
-                plrHnd1 += curDrwC;
-        }
+        cout << "Your second card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
+
+        // Determines if the two drawn cards are pairs, and updates the plrSplt flag accordingly
+        plrSplt = (plrHnd1[2] % 13 == 0 || (plrHnd1[2] % 13 >= 10 && plrHnd1[2] % 13 <= 12)) && (plrHnd1[3] % 13 == 0 || (plrHnd1[3] % 13 >= 10 && plrHnd1[3] % 13 <= 12)) ||
+                  plrHnd1[2] % 13 == plrHnd1[3] % 13;
 
         //
         // Dealer Draw Cards
         //
 
         // Draw first dealer card
-        delCrd1 = (rand() % 11) + 1;
-        switch (delCrd1) {
-            case 11:
-                cout << "The dealer's first card is an ace.\n";
-                break;
-            case 10:
-                cout << "The dealer's first card is a 10/face card.\n";
-                break;
-            default:
-                cout << "The dealer's first card is a(n) " << static_cast<int>(delCrd1) << " card.\n";
-        }
+        cout << "The dealer's first card is a(n) " << appHand(delHand, drawCrd()) << ".\n";
 
         // Draw second dealer card
-        delCrd2 = (rand() % 11) + 1;
-        // Check if first card is an ace, if it is, count the second card with a value of 1
-        delCrd2 = delCrd1 == 11 ? 1 : delCrd2;
+        appHand(delHand, drawCrd());
 
         // Check if player has a blackjack
-        if (plrHnd1 == 21)
-            gameSte = 2;
+        if (plrHnd1[0] == 21)
+            gameSte[0] = 2;
 
         // Check if dealer has a blackjack
-        if (delCrd1 + delCrd2 == 21) {
-            if (gameSte == 2)
-                gameSte = 1;
+        if (delHand[0] == 21) {
+            if (gameSte[0] == 2)
+                gameSte[0] = 1;
             else
-                gameSte = 3;
+                gameSte[0] = 3;
         }
 
-        if (gameSte == 0) {
+        if (gameSte[0] == 0) {
             // Player card splitting - Checks if the player was dealt a pair and if the player have enough chips to split
-            if (plrSplt && plrChps >= plrBet1) {
+            if (plrSplt && plrChps >= plrWger[0]) {
                 cout << "You have been dealt a pair, would you like to split your cards? (Y or N): ";
                 cin >> plrChce;
                 plrChce = static_cast<char>(toupper(plrChce));
@@ -245,10 +212,9 @@ int main(int argc, char **argv) {
                 }
 
                 if (plrChce == 89) {
-                    plrHnd2 = plrHnd1 / 2;
-                    plrHnd1 /= 2;
-                    plrBet2 = plrBet1;
-                    plrChps -= plrBet2;
+                    appHand(plrHnd2, popBkHnd(plrHnd1));
+                    plrWger[1] = plrWger[0];
+                    plrChps -= plrWger[1];
                 } else {
                     plrSplt = false;
                 }
@@ -256,9 +222,9 @@ int main(int argc, char **argv) {
                 plrSplt = false;
 
             // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
-            plrDbDn = plrChps >= plrBet1;
-
-            cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit" << (plrDbDn ? ", D: Double Down" : "") << (!plrSplt ? ", X: Surrender" : "") << " -> ";
+            plrDbDn = plrChps >= plrWger[0];
+            cout << "Enter Option (Player Hand 1: " << outHndT(plrHnd1[0], plrHnd1[1]) << ", Dealer Hand: " << static_cast<int>(delHand[0]) << ")\nS: Stand, H: Hit" << (
+                plrDbDn ? ", D: Double Down" : "") << (!plrSplt ? ", X: Surrender" : "") << " -> ";
             cin >> plrChce;
             plrChce = static_cast<char>(toupper(plrChce));
 
@@ -291,419 +257,397 @@ int main(int argc, char **argv) {
 
             switch (plrChce) {
                 case 'X':
-                    gameSte = 5;
+                    gameSte[0] = 5;
                     break;
                 case 'S':
                     cout << "You have chosen to stand.\n";
-                    gameSte = 6;
+                    gameSte[0] = 6;
                     break;
                 case 'D':
                     cout << "You have chosen to double down and double your wager. ";
-                    plrChps -= plrBet1;
-                    plrBet1 *= 2;
-                    curDrwC = (rand() % 11) + 1;
-                    switch (curDrwC) {
-                        case 11:
-                            if (plrHnd1 > 10) {
-                                cout << "Your third card is an ace, counted with a value of 1.\n";
-                                plrHnd1++;
-                            } else {
-                                cout << "Your third card is an ace.\n";
-                                plrHnd1 += curDrwC;
-                            }
-                            break;
-                        case 10:
-                            cout << "Your third card is a 10/face card.\n";
-                            plrHnd1 += curDrwC;
-                            break;
-                        default:
-                            cout << "Your third card is a(n) " << static_cast<int>(curDrwC) << " card.\n";
-                            plrHnd1 += curDrwC;
+                    plrChps -= plrWger[0];
+                    plrWger[0] *= 2;
+                    cout << "Your third card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
+                    if (plrHnd1[0] == plrHnd1[1]) {
+                        if (plrHnd1[0] > 21)
+                            gameSte[0] = 7;
+                        else if (plrHnd1[0] == 21)
+                            gameSte[0] = 2;
+                        else
+                            gameSte[0] = 4;
+                    } else {
+                        if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
+                            gameSte[0] = 7;
+                        else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
+                            gameSte[0] = 2;
+                        else
+                            gameSte[0] = 4;
                     }
-                    if (plrHnd1 > 21)
-                        gameSte = 7;
-                    else if (plrHnd1 == 21)
-                        gameSte = 2;
-                    else
-                        gameSte = 4;
                     break;
                 default:
-                    curDrwC = (rand() % 11) + 1;
-                    switch (curDrwC) {
-                        case 11:
-                            if (plrHnd1 > 10) {
-                                cout << "You have drawn an ace, counted with a value of 1.\n";
-                                plrHnd1++;
-                            } else {
-                                cout << "You have drawn an ace.\n";
-                                plrHnd1 += curDrwC;
-                            }
-                            break;
-                        case 10:
-                            cout << "You have drawn a 10/face card.\n";
-                            plrHnd1 += curDrwC;
-                            break;
-                        default:
-                            cout << "Your have drawn a(n) " << static_cast<int>(curDrwC) << " card.\n";
-                            plrHnd1 += curDrwC;
-                    }
-                    if (plrHnd1 > 21)
-                        gameSte = 7;
-                    else {
-                        if (plrHnd1 == 21)
-                            gameSte = 2;
-                    }
-                    break;
-            }
-
-            if (gameSte == 0) {
-                do {
-                    cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit -> ";
-                    cin >> plrChce;
-                    plrChce = static_cast<char>(toupper(plrChce));
-
-                    // Input validation
-                    while (!isVldOp(plrChce, vector<char>{'S', 'H'})) {
-                        cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
-                        cin >> plrChce;
-                        plrChce = static_cast<char>(toupper(plrChce));
-                    }
-
-                    switch (plrChce) {
-                        case 'S':
-                            gameSte = 6;
-                            break;
-                        default:
-                            curDrwC = (rand() % 11) + 1;
-                            switch (curDrwC) {
-                                case 11:
-                                    if (plrHnd1 > 10) {
-                                        cout << "You have drawn an ace, counted with a value of 1.\n";
-                                        plrHnd1++;
-                                    } else {
-                                        cout << "You have drawn an ace.\n";
-                                        plrHnd1 += curDrwC;
-                                    }
-                                    break;
-                                case 10:
-                                    cout << "You have drawn a 10/face card.\n";
-                                    plrHnd1 += curDrwC;
-                                    break;
-                                default:
-                                    cout << "Your have drawn a(n) " << static_cast<int>(curDrwC) << " card.\n";
-                                    plrHnd1 += curDrwC;
-                            }
-                            if (plrHnd1 > 21)
-                                gameSte = 7;
-                            else if (plrHnd1 == 21)
-                                gameSte = 2;
-                            break;
-                    }
-                } while (gameSte == 0);
-            }
-
-            // Player second hand turn if they chose to split their hand
-            if (plrSplt) {
-                // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
-                plrDbDn = plrChps >= plrBet2;
-
-                cout << "Enter Option (Player Hand 2: " << static_cast<int>(plrHnd2) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit" << (plrDbDn ? ", D: Double Down" : "") << " -> ";
-                cin >> plrChce;
-                plrChce = static_cast<char>(toupper(plrChce));
-
-                // Input validation based on if the player can double down or not
-                if (plrDbDn) {
-                    while (!isVldOp(plrChce, vector<char>{'S', 'H', 'D'})) {
-                        cout << "Invalid option. Enter new option (S: Stand, H: Hit, D: Double Down): ";
-                        cin >> plrChce;
-                        plrChce = static_cast<char>(toupper(plrChce));
-                    }
-                } else {
-                    while (!isVldOp(plrChce, vector<char>{'S', 'H'})) {
-                        cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
-                        cin >> plrChce;
-                        plrChce = static_cast<char>(toupper(plrChce));
-                    }
-                }
-
-                switch (plrChce) {
-                    case 'S':
-                        cout << "You have chosen to stand.\n";
-                        gameSte += 60;
-                        break;
-                    case 'D':
-                        cout << "You have chosen to double down and double your wager. ";
-                        plrChps -= plrBet2;
-                        plrBet2 *= 2;
-                        curDrwC = (rand() % 11) + 1;
-                        switch (curDrwC) {
-                            case 11:
-                                if (plrHnd2 > 10) {
-                                    cout << "Your third card is an ace, counted with a value of 1.\n";
-                                    plrHnd2++;
-                                } else {
-                                    cout << "Your third card is an ace.\n";
-                                    plrHnd2 += curDrwC;
-                                }
-                                break;
-                            case 10:
-                                cout << "Your third card is a 10/face card.\n";
-                                plrHnd2 += curDrwC;
-                                break;
-                            default:
-                                cout << "Your third card is a(n) " << static_cast<int>(curDrwC) << " card.\n";
-                                plrHnd2 += curDrwC;
-                        }
-                        if (plrHnd2 > 21)
-                            gameSte += 70;
-                        else if (plrHnd2 == 21)
-                            gameSte += 20;
-                        else
-                            gameSte += 40;
-                        break;
-                    default:
-                        curDrwC = (rand() % 11) + 1;
-                        switch (curDrwC) {
-                            case 11:
-                                if (plrHnd2 > 10) {
-                                    cout << "You have drawn an ace, counted with a value of 1.\n";
-                                    plrHnd2++;
-                                } else {
-                                    cout << "You have drawn an ace.\n";
-                                    plrHnd2 += curDrwC;
-                                }
-                                break;
-                            case 10:
-                                cout << "You have drawn a 10/face card.\n";
-                                plrHnd2 += curDrwC;
-                                break;
-                            default:
-                                cout << "Your have drawn a(n) " << static_cast<int>(curDrwC) << " card.\n";
-                                plrHnd2 += curDrwC;
-                        }
-                        if (plrHnd2 > 21)
-                            gameSte += 70;
-                        else if (plrHnd2 == 21)
-                            gameSte += 20;
-                        break;
-                }
-
-                if (gameSte / 10 == 0) {
-                    do {
-                        cout << "Enter Option (Player Hand 2: " << static_cast<int>(plrHnd2) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit -> ";
-                        cin >> plrChce;
-                        plrChce = static_cast<char>(toupper(plrChce));
-                        while (plrChce != 83 && plrChce != 72) {
-                            cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
-                            cin >> plrChce;
-                            plrChce = static_cast<char>(toupper(plrChce));
-                        }
-
-                        switch (plrChce) {
-                            case 'S':
-                                gameSte += 60;
-                                break;
-                            default:
-                                curDrwC = (rand() % 11) + 1;
-                                switch (curDrwC) {
-                                    case 11:
-                                        if (plrHnd2 > 10) {
-                                            cout << "You have drawn an ace, counted with a value of 1.\n";
-                                            plrHnd2++;
-                                        } else {
-                                            cout << "You have drawn an ace.\n";
-                                            plrHnd2 += curDrwC;
-                                        }
-                                        break;
-                                    case 10:
-                                        cout << "You have drawn a 10/face card.\n";
-                                        plrHnd2 += curDrwC;
-                                        break;
-                                    default:
-                                        cout << "Your have drawn a(n) " << static_cast<int>(curDrwC) << " card.\n";
-                                        plrHnd2 += curDrwC;
-                                }
-                                if (plrHnd2 > 21)
-                                    gameSte += 70;
-                                else if (plrHnd2 == 21)
-                                    gameSte += 20;
-                                break;
-                        }
-                    } while (gameSte / 10 == 0);
-                }
-            }
-
-            // Checks if the player's hand(s) have already gone bust or not
-            if (gameSte != 5 && !((!plrSplt && gameSte % 10 == 7) || (gameSte % 10 == 7 && plrSplt && gameSte / 10 == 7))) {
-                /*
-                 * Dealer's turn
-                 */
-                switch (delCrd2) {
-                    case 11:
-                        cout << "The dealer's second card is an ace.\n";
-                        break;
-                    case 10:
-                        cout << "The dealer's second card is a 10/face card.\n";
-                        break;
-                    default:
-                        cout << "The dealer's second card is a(n) " << static_cast<int>(delCrd2) << " card.\n";
-                }
-
-                // Dealer stands on soft 17
-                while (delCrd1 + delCrd2 < 17) {
-                    delCrd1 += delCrd2;
-                    delCrd2 = (rand() % 11) + 1;
-                    switch (delCrd2) {
-                        case 11:
-                            cout << "The dealer draws another card and it is an ace.\n";
-                            break;
-                        case 10:
-                            cout << "The dealer draws another card and it is a 10/face card.\n";
-                            break;
-                        default:
-                            cout << "The dealer draws another card and it is a(n) " << static_cast<int>(delCrd2) << " card.\n";
-                    }
-                }
-
-                if (delCrd1 + delCrd2 > 21)
-                    gameSte = 8;
-                else if (delCrd1 + delCrd2 == 21) {
-                    // Updates gameSte variable based on if the player has a blackjack or not
-                    gameSte = (gameSte % 10 == 2 ? gameSte / 10 + 1 : gameSte / 10 + 3);
-                    gameSte = (gameSte / 10 == 2 ? gameSte % 10 + 10 : gameSte % 10 + 30);
-                }
-            }
-        }
-
-        cout << "Player Hand 1: " << static_cast<int>(plrHnd1) << (plrHnd2 != 0 ? ", Player Hand 2: " + to_string(plrHnd2) : "") << ", Dealer Hand: " << static_cast<int>(delCrd1 + delCrd2) << '\n';
-
-        // Game payout/ending
-        if (gameSte == 8) {
-            cout << "Dealer has gone bust, you win 1x your wager" << (plrSplt ? " for both hands" : "") << "!.\n";
-            plrChps += plrBet1 * 2 + plrBet2 * 2;
-            plrStat[0]++;
-        } else if (gameSte == 5) {
-            cout << "You have chose to surrender your hand, you receive half your original bet back.\n";
-            plrChps += static_cast<unsigned short>(floor(plrBet1 / 2));
-            plrStat[1]++;
-        } else {
-            if (gameSte % 10 == 1) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") << ".\n";
-                plrChps += plrBet1;
-            } else if (gameSte % 10 == 2) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (plrSplt ? " You win 1.5x your wager for your first hand" : " You win 1.5x your wager") << "!\n";
-                plrChps += plrBet1 + static_cast<unsigned short>(ceil(plrBet1 * 1.5f));
-                plrStat[0]++;
-            } else if (gameSte % 10 == 3) {
-                cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
-                plrStat[1]++;
-            } else if (gameSte % 10 == 7) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
-                plrStat[1]++;
-            } else {
-                if (plrHnd1 > delCrd1 + delCrd2) {
-                    cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand" : " You win 1x your wager") << "!\n";
-                    plrChps += plrBet1 * 2;
-                    plrStat[0]++;
-                } else if (plrHnd1 == delCrd1 + delCrd2) {
-                    cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") << ".\n";
-                    plrChps += plrBet1;
-                } else {
-                    cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
-                    plrStat[1]++;
-                }
-            }
-
-            if (plrSplt) {
-                if (gameSte / 10 == 1) {
-                    cout << "Your second hand and the dealer's hand are both blackjack's. Your second hand ends in a push.\n";
-                    plrChps += plrBet2;
-                } else if (gameSte / 10 == 2) {
-                    cout << "Your second hand is a blackjack! You win 1.5x your wager for your second hand!\n";
-                    plrChps += plrBet2 + static_cast<unsigned short>(ceil(plrBet2 * 1.5f));
-                    plrStat[0]++;
-                } else if (gameSte / 10 == 3) {
-                    cout << "The dealer's hand is a blackjack and your second hand is not. You lose your second hand.\n";
-                    plrStat[1]++;
-                } else if (gameSte / 10 == 7) {
-                    cout << "Your second hand has gone bust. You lose your second hand.\n";
-                    plrStat[1]++;
-                } else {
-                    if (plrHnd2 > delCrd1 + delCrd2) {
-                        cout << "Your first hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
-                        plrChps += plrBet2 * 2;
-                        plrStat[0]++;
-                    } else if (plrHnd2 == delCrd1 + delCrd2) {
-                        cout << "Your second hand is equal to the dealer's hand. Your second hand is a push.\n";
-                        plrChps += plrBet2;
+                    cout << "Your next card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
+                    if (plrHnd1[0] == plrHnd1[1]) {
+                        if (plrHnd1[0] > 21)
+                            gameSte[0] = 7;
+                        else if (plrHnd1[0] == 21)
+                            gameSte[0] = 2;
                     } else {
-                        cout << "Your second hand is smaller than the dealer's hand. You lose your second hand.\n";
-                        plrStat[1]++;
+                        if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
+                            gameSte[0] = 7;
+                        else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
+                            gameSte[0] = 2;
                     }
-                }
             }
+
+            // if (gameSte == 0) {
+            //     do {
+            //         cout << "Enter Option (Player Hand 1: " << static_cast<int>(plrHnd1) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit -> ";
+            //         cin >> plrChce;
+            //         plrChce = static_cast<char>(toupper(plrChce));
+            //
+            //         // Input validation
+            //         while (!isVldOp(plrChce, vector<char>{'S', 'H'})) {
+            //             cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
+            //             cin >> plrChce;
+            //             plrChce = static_cast<char>(toupper(plrChce));
+            //         }
+            //
+            //         switch (plrChce) {
+            //             case 'S':
+            //                 gameSte = 6;
+            //                 break;
+            //             default:
+            //                 curDrwC = (rand() % 11) + 1;
+            //                 switch (curDrwC) {
+            //                     case 11:
+            //                         if (plrHnd1 > 10) {
+            //                             cout << "You have drawn an ace, counted with a value of 1.\n";
+            //                             plrHnd1++;
+            //                         } else {
+            //                             cout << "You have drawn an ace.\n";
+            //                             plrHnd1 += curDrwC;
+            //                         }
+            //                         break;
+            //                     case 10:
+            //                         cout << "You have drawn a 10/face card.\n";
+            //                         plrHnd1 += curDrwC;
+            //                         break;
+            //                     default:
+            //                         cout << "Your have drawn a(n) " << static_cast<int>(curDrwC) << " card.\n";
+            //                         plrHnd1 += curDrwC;
+            //                 }
+            //                 if (plrHnd1 > 21)
+            //                     gameSte = 7;
+            //                 else if (plrHnd1 == 21)
+            //                     gameSte = 2;
+            //                 break;
+            //         }
+            //     } while (gameSte == 0);
+            // }
+            //
+            // // Player second hand turn if they chose to split their hand
+            // if (plrSplt) {
+            //     // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
+            //     plrDbDn = plrChps >= plrBet2;
+            //
+            //     cout << "Enter Option (Player Hand 2: " << static_cast<int>(plrHnd2) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit" << (plrDbDn ? ", D: Double Down" : "") << " -> ";
+            //     cin >> plrChce;
+            //     plrChce = static_cast<char>(toupper(plrChce));
+            //
+            //     // Input validation based on if the player can double down or not
+            //     if (plrDbDn) {
+            //         while (!isVldOp(plrChce, vector<char>{'S', 'H', 'D'})) {
+            //             cout << "Invalid option. Enter new option (S: Stand, H: Hit, D: Double Down): ";
+            //             cin >> plrChce;
+            //             plrChce = static_cast<char>(toupper(plrChce));
+            //         }
+            //     } else {
+            //         while (!isVldOp(plrChce, vector<char>{'S', 'H'})) {
+            //             cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
+            //             cin >> plrChce;
+            //             plrChce = static_cast<char>(toupper(plrChce));
+            //         }
+            //     }
+            //
+            //     switch (plrChce) {
+            //         case 'S':
+            //             cout << "You have chosen to stand.\n";
+            //             gameSte += 60;
+            //             break;
+            //         case 'D':
+            //             cout << "You have chosen to double down and double your wager. ";
+            //             plrChps -= plrBet2;
+            //             plrBet2 *= 2;
+            //             curDrwC = (rand() % 11) + 1;
+            //             switch (curDrwC) {
+            //                 case 11:
+            //                     if (plrHnd2 > 10) {
+            //                         cout << "Your third card is an ace, counted with a value of 1.\n";
+            //                         plrHnd2++;
+            //                     } else {
+            //                         cout << "Your third card is an ace.\n";
+            //                         plrHnd2 += curDrwC;
+            //                     }
+            //                     break;
+            //                 case 10:
+            //                     cout << "Your third card is a 10/face card.\n";
+            //                     plrHnd2 += curDrwC;
+            //                     break;
+            //                 default:
+            //                     cout << "Your third card is a(n) " << static_cast<int>(curDrwC) << " card.\n";
+            //                     plrHnd2 += curDrwC;
+            //             }
+            //             if (plrHnd2 > 21)
+            //                 gameSte += 70;
+            //             else if (plrHnd2 == 21)
+            //                 gameSte += 20;
+            //             else
+            //                 gameSte += 40;
+            //             break;
+            //         default:
+            //             curDrwC = (rand() % 11) + 1;
+            //             switch (curDrwC) {
+            //                 case 11:
+            //                     if (plrHnd2 > 10) {
+            //                         cout << "You have drawn an ace, counted with a value of 1.\n";
+            //                         plrHnd2++;
+            //                     } else {
+            //                         cout << "You have drawn an ace.\n";
+            //                         plrHnd2 += curDrwC;
+            //                     }
+            //                     break;
+            //                 case 10:
+            //                     cout << "You have drawn a 10/face card.\n";
+            //                     plrHnd2 += curDrwC;
+            //                     break;
+            //                 default:
+            //                     cout << "Your have drawn a(n) " << static_cast<int>(curDrwC) << " card.\n";
+            //                     plrHnd2 += curDrwC;
+            //             }
+            //             if (plrHnd2 > 21)
+            //                 gameSte += 70;
+            //             else if (plrHnd2 == 21)
+            //                 gameSte += 20;
+            //             break;
+            //     }
+            //
+            //     if (gameSte / 10 == 0) {
+            //         do {
+            //             cout << "Enter Option (Player Hand 2: " << static_cast<int>(plrHnd2) << ", Dealer Hand: " << static_cast<int>(delCrd1) << ")\nS: Stand, H: Hit -> ";
+            //             cin >> plrChce;
+            //             plrChce = static_cast<char>(toupper(plrChce));
+            //             while (plrChce != 83 && plrChce != 72) {
+            //                 cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
+            //                 cin >> plrChce;
+            //                 plrChce = static_cast<char>(toupper(plrChce));
+            //             }
+            //
+            //             switch (plrChce) {
+            //                 case 'S':
+            //                     gameSte += 60;
+            //                     break;
+            //                 default:
+            //                     curDrwC = (rand() % 11) + 1;
+            //                     switch (curDrwC) {
+            //                         case 11:
+            //                             if (plrHnd2 > 10) {
+            //                                 cout << "You have drawn an ace, counted with a value of 1.\n";
+            //                                 plrHnd2++;
+            //                             } else {
+            //                                 cout << "You have drawn an ace.\n";
+            //                                 plrHnd2 += curDrwC;
+            //                             }
+            //                             break;
+            //                         case 10:
+            //                             cout << "You have drawn a 10/face card.\n";
+            //                             plrHnd2 += curDrwC;
+            //                             break;
+            //                         default:
+            //                             cout << "Your have drawn a(n) " << static_cast<int>(curDrwC) << " card.\n";
+            //                             plrHnd2 += curDrwC;
+            //                     }
+            //                     if (plrHnd2 > 21)
+            //                         gameSte += 70;
+            //                     else if (plrHnd2 == 21)
+            //                         gameSte += 20;
+            //                     break;
+            //             }
+            //         } while (gameSte / 10 == 0);
+            //     }
+            // }
+            //
+            // // Checks if the player's hand(s) have already gone bust or not
+            // if (gameSte != 5 && !((!plrSplt && gameSte % 10 == 7) || (gameSte % 10 == 7 && plrSplt && gameSte / 10 == 7))) {
+            //     /*
+            //      * Dealer's turn
+            //      */
+            //     switch (delCrd2) {
+            //         case 11:
+            //             cout << "The dealer's second card is an ace.\n";
+            //             break;
+            //         case 10:
+            //             cout << "The dealer's second card is a 10/face card.\n";
+            //             break;
+            //         default:
+            //             cout << "The dealer's second card is a(n) " << static_cast<int>(delCrd2) << " card.\n";
+            //     }
+            //
+            //     // Dealer stands on soft 17
+            //     while (delCrd1 + delCrd2 < 17) {
+            //         delCrd1 += delCrd2;
+            //         delCrd2 = (rand() % 11) + 1;
+            //         switch (delCrd2) {
+            //             case 11:
+            //                 cout << "The dealer draws another card and it is an ace.\n";
+            //                 break;
+            //             case 10:
+            //                 cout << "The dealer draws another card and it is a 10/face card.\n";
+            //                 break;
+            //             default:
+            //                 cout << "The dealer draws another card and it is a(n) " << static_cast<int>(delCrd2) << " card.\n";
+            //         }
+            //     }
+            //
+            //     if (delCrd1 + delCrd2 > 21)
+            //         gameSte = 8;
+            //     else if (delCrd1 + delCrd2 == 21) {
+            //         // Updates gameSte variable based on if the player has a blackjack or not
+            //         gameSte = (gameSte % 10 == 2 ? gameSte / 10 + 1 : gameSte / 10 + 3);
+            //         gameSte = (gameSte / 10 == 2 ? gameSte % 10 + 10 : gameSte % 10 + 30);
+            //     }
+            // }
         }
-        cout << "Player Statistics:\n* Wins: " << plrStat[0] << "\n* Losses: " << plrStat[1] << "\n* Cash: " << plrCash << "\n* Chips: " << plrChps << "\n";
 
-        // Checks if the player has enough chips and cash to continue playing
-        if (plrChps < 5 && plrCash < 5) {
-            cout << "You do not have enough cash or chips to continue playing. Game over.\n";
-            plrChce = 69;
-        } else {
-            // Game End
-            cout << "Enter Option (N: New Game, E: Exit & Save): ";
-            cin >> plrChce;
-            plrChce = static_cast<char>(toupper(plrChce));
-
-            // Input validation
-            while (!isVldOp(plrChce, vector<char>{'N', 'E'})) {
-                cout << "Invalid option. Enter new option (N: New Game, E: Exit): ";
-                cin >> plrChce;
-                plrChce = static_cast<char>(toupper(plrChce));
-            }
-
-            if (plrChce == 78) {
-                if (plrCash >= 5) {
-                    cout << "Would you like to purchase more chips? (Y or N) (Current Amount: " << plrChps << "): ";
-                    cin >> plrChce;
-                    plrChce = static_cast<char>(toupper(plrChce));
-
-                    // Input validation
-                    while (!isVldOp(plrChce, vector<char>{'Y', 'N'})) {
-                        cout << "Invalid option. Enter new option (Y or N): ";
-                        cin >> plrChce;
-                        plrChce = static_cast<char>(toupper(plrChce));
-                    }
-                    if (plrChce == 89) {
-                        cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
-                        cin >> plrInpt;
-                        plrInpt = floor(plrInpt);
-
-                        // Verify purchased chip amount is a valid amount and that the player has enough cash
-                        while (!inRange(plrInpt, 5.0f, min(static_cast<float>(plrCash), 65'000.0f))) {
-                            cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
-                            cin >> plrInpt;
-                            plrInpt = floor(plrInpt);
-                        }
-                        plrChps += static_cast<unsigned short>(floor(plrInpt));
-                        plrCash -= static_cast<unsigned short>(floor(plrInpt));
-                    }
-                }
-
-                // Reset Variables
-                curDrwC = 0;
-                plrSplt = false;
-                plrDbDn = false;
-                gameSte = 0;
-                plrBet1 = 0;
-                plrBet2 = 0;
-                plrHnd1 = 0;
-                plrHnd2 = 0;
-                delCrd1 = 0;
-                delCrd2 = 0;
-                cout << '\n';
-            }
-        }
+        // cout << "Player Hand 1: " << static_cast<int>(plrHnd1) << (plrHnd2 != 0 ? ", Player Hand 2: " + to_string(plrHnd2) : "") << ", Dealer Hand: " << static_cast<int>(delCrd1 + delCrd2) << '\n';
+        //
+        // // Game payout/ending
+        // if (gameSte == 8) {
+        //     cout << "Dealer has gone bust, you win 1x your wager" << (plrSplt ? " for both hands" : "") << "!.\n";
+        //     plrChps += plrBet1 * 2 + plrBet2 * 2;
+        //     plrStat[0]++;
+        // } else if (gameSte == 5) {
+        //     cout << "You have chose to surrender your hand, you receive half your original bet back.\n";
+        //     plrChps += static_cast<unsigned short>(floor(plrBet1 / 2));
+        //     plrStat[1]++;
+        // } else {
+        //     if (gameSte % 10 == 1) {
+        //         cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") << ".\n";
+        //         plrChps += plrBet1;
+        //     } else if (gameSte % 10 == 2) {
+        //         cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (plrSplt ? " You win 1.5x your wager for your first hand" : " You win 1.5x your wager") << "!\n";
+        //         plrChps += plrBet1 + static_cast<unsigned short>(ceil(plrBet1 * 1.5f));
+        //         plrStat[0]++;
+        //     } else if (gameSte % 10 == 3) {
+        //         cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
+        //         plrStat[1]++;
+        //     } else if (gameSte % 10 == 7) {
+        //         cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
+        //         plrStat[1]++;
+        //     } else {
+        //         if (plrHnd1 > delCrd1 + delCrd2) {
+        //             cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand" : " You win 1x your wager") << "!\n";
+        //             plrChps += plrBet1 * 2;
+        //             plrStat[0]++;
+        //         } else if (plrHnd1 == delCrd1 + delCrd2) {
+        //             cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") << ".\n";
+        //             plrChps += plrBet1;
+        //         } else {
+        //             cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
+        //             plrStat[1]++;
+        //         }
+        //     }
+        //
+        //     if (plrSplt) {
+        //         if (gameSte / 10 == 1) {
+        //             cout << "Your second hand and the dealer's hand are both blackjack's. Your second hand ends in a push.\n";
+        //             plrChps += plrBet2;
+        //         } else if (gameSte / 10 == 2) {
+        //             cout << "Your second hand is a blackjack! You win 1.5x your wager for your second hand!\n";
+        //             plrChps += plrBet2 + static_cast<unsigned short>(ceil(plrBet2 * 1.5f));
+        //             plrStat[0]++;
+        //         } else if (gameSte / 10 == 3) {
+        //             cout << "The dealer's hand is a blackjack and your second hand is not. You lose your second hand.\n";
+        //             plrStat[1]++;
+        //         } else if (gameSte / 10 == 7) {
+        //             cout << "Your second hand has gone bust. You lose your second hand.\n";
+        //             plrStat[1]++;
+        //         } else {
+        //             if (plrHnd2 > delCrd1 + delCrd2) {
+        //                 cout << "Your first hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
+        //                 plrChps += plrBet2 * 2;
+        //                 plrStat[0]++;
+        //             } else if (plrHnd2 == delCrd1 + delCrd2) {
+        //                 cout << "Your second hand is equal to the dealer's hand. Your second hand is a push.\n";
+        //                 plrChps += plrBet2;
+        //             } else {
+        //                 cout << "Your second hand is smaller than the dealer's hand. You lose your second hand.\n";
+        //                 plrStat[1]++;
+        //             }
+        //         }
+        //     }
+        // }
+        // cout << "Player Statistics:\n* Wins: " << plrStat[0] << "\n* Losses: " << plrStat[1] << "\n* Cash: " << plrCash << "\n* Chips: " << plrChps << "\n";
+        //
+        // // Checks if the player has enough chips and cash to continue playing
+        // if (plrChps < 5 && plrCash < 5) {
+        //     cout << "You do not have enough cash or chips to continue playing. Game over.\n";
+        //     plrChce = 69;
+        // } else {
+        //     // Game End
+        //     cout << "Enter Option (N: New Game, E: Exit & Save): ";
+        //     cin >> plrChce;
+        //     plrChce = static_cast<char>(toupper(plrChce));
+        //
+        //     // Input validation
+        //     while (!isVldOp(plrChce, vector<char>{'N', 'E'})) {
+        //         cout << "Invalid option. Enter new option (N: New Game, E: Exit): ";
+        //         cin >> plrChce;
+        //         plrChce = static_cast<char>(toupper(plrChce));
+        //     }
+        //
+        //     if (plrChce == 78) {
+        //         if (plrCash >= 5) {
+        //             cout << "Would you like to purchase more chips? (Y or N) (Current Amount: " << plrChps << "): ";
+        //             cin >> plrChce;
+        //             plrChce = static_cast<char>(toupper(plrChce));
+        //
+        //             // Input validation
+        //             while (!isVldOp(plrChce, vector<char>{'Y', 'N'})) {
+        //                 cout << "Invalid option. Enter new option (Y or N): ";
+        //                 cin >> plrChce;
+        //                 plrChce = static_cast<char>(toupper(plrChce));
+        //             }
+        //             if (plrChce == 89) {
+        //                 cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
+        //                 cin >> plrInpt;
+        //                 plrInpt = floor(plrInpt);
+        //
+        //                 // Verify purchased chip amount is a valid amount and that the player has enough cash
+        //                 while (!inRange(plrInpt, 5.0f, min(static_cast<float>(plrCash), 65'000.0f))) {
+        //                     cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
+        //                     cin >> plrInpt;
+        //                     plrInpt = floor(plrInpt);
+        //                 }
+        //                 plrChps += static_cast<unsigned short>(floor(plrInpt));
+        //                 plrCash -= static_cast<unsigned short>(floor(plrInpt));
+        //             }
+        //         }
+        //
+        //         // Reset Variables
+        //         curDrwC = 0;
+        //         plrSplt = false;
+        //         plrDbDn = false;
+        //         gameSte = 0;
+        //         plrBet1 = 0;
+        //         plrBet2 = 0;
+        //         plrHnd1 = 0;
+        //         plrHnd2 = 0;
+        //         delCrd1 = 0;
+        //         delCrd2 = 0;
+        //         cout << '\n';
+        //     }
+        // }
+        plrChce = 69;
     } while (plrChce != 69);
 
     // Save to Game File
@@ -851,8 +795,13 @@ string appHand(vector<char> &hand, const char &card) {
         // All Other Cards
         switch (card % 13) {
             case 1:
-                hand[0] += 11;
-                hand[1] += 1;
+                if (hand[0] < 11) {
+                    hand[0] += 11;
+                    hand[1] += 1;
+                } else {
+                    hand[0] += 1;
+                    hand[1] += 1;
+                }
                 crdOut += "Ace";
                 break;
             case 11:
@@ -888,4 +837,46 @@ string appHand(vector<char> &hand, const char &card) {
         }
     }
     return crdOut;
+}
+
+char popBkHnd(vector<char> &hand) {
+    char card{hand[hand.size() - 1]};
+
+    hand.pop_back();
+    // If a King Card
+    if (card % 13 == 0) {
+        hand[0] -= 10;
+        hand[1] -= 10;
+    } else {
+        // All Other Cards
+        switch (card % 13) {
+            case 1:
+                if (hand[hand.size() - 1] % 13 == 1 && card % 13 == 1) {
+                    hand[0] -= 1;
+                    hand[1] -= 1;
+                } else {
+                    hand[0] -= 11;
+                    hand[1] -= 1;
+                }
+                break;
+            case 11:
+            case 12:
+                hand[0] -= 10;
+                hand[1] -= 10;
+                break;
+            default:
+                hand[0] -= card % 13;
+                hand[1] -= card % 13;
+        }
+    }
+
+    return card;
+}
+
+string outHndT(const char &total1, const char &total2) {
+    if (total1 == total2)
+        return to_string(static_cast<int>(total1));
+    if (total1 <= 21)
+        return to_string(static_cast<int>(total1)) + '/' + to_string(static_cast<int>(total2));
+    return to_string(static_cast<int>(total2));
 }
