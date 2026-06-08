@@ -429,8 +429,8 @@ int main(int argc, char **argv) {
                 /*
                  * Dealer's turn
                  */
-                cout << "The dealer's second card is a(n)" << appHand(delHand, drawCrd()) << ".\n";
-
+                cout << "The dealer's second card is a(n)" << appHand(delHand, delHand[3]) << ".\n";
+                popBkHnd(delHand);
                 // Dealer stands on soft 17
                 while (delHand[0] < 17) {
                     cout << "The dealer's draws another card and it is a(n)" << appHand(delHand, drawCrd()) << ".\n";
@@ -453,8 +453,9 @@ int main(int argc, char **argv) {
             }
         }
 
-        // cout << "Player Hand 1: " << static_cast<int>(plrHnd1) << (plrHnd2 != 0 ? ", Player Hand 2: " + to_string(plrHnd2) : "") << ", Dealer Hand: " << static_cast<int>(delCrd1 + delCrd2) << '\n';
-        //
+        cout << "Player Hand 1: " << outHndT(plrHnd1[0], plrHnd1[1]) << (plrHnd2[0] != 0 ? ", Player Hand 2: " + outHndT(plrHnd2[0], plrHnd2[1]) : "") << ", Dealer Hand: " <<
+                static_cast<int>(delHand[0]) << '\n';
+
         // // Game payout/ending
         // if (gameSte == 8) {
         //     cout << "Dealer has gone bust, you win 1x your wager" << (plrSplt ? " for both hands" : "") << "!.\n";
@@ -466,25 +467,30 @@ int main(int argc, char **argv) {
         //     plrStat[1]++;
         // } else {
         //     if (gameSte % 10 == 1) {
-        //         cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") << ".\n";
+        //         cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push"
+        //                                                                                                                    : " Game ends in a push") << ".\n";
         //         plrChps += plrBet1;
         //     } else if (gameSte % 10 == 2) {
-        //         cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (plrSplt ? " You win 1.5x your wager for your first hand" : " You win 1.5x your wager") << "!\n";
+        //         cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (plrSplt ? " You win 1.5x your wager for your first hand" : " You win 1.5x your wager") <<
+        //                 "!\n";
         //         plrChps += plrBet1 + static_cast<unsigned short>(ceil(plrBet1 * 1.5f));
         //         plrStat[0]++;
         //     } else if (gameSte % 10 == 3) {
-        //         cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
+        //         cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." << (plrSplt ? " You lose your first hand" : " You lose") <<
+        //                 ".\n";
         //         plrStat[1]++;
         //     } else if (gameSte % 10 == 7) {
         //         cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
         //         plrStat[1]++;
         //     } else {
         //         if (plrHnd1 > delCrd1 + delCrd2) {
-        //             cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand" : " You win 1x your wager") << "!\n";
+        //             cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand"
+        //                                                                                                              : " You win 1x your wager") << "!\n";
         //             plrChps += plrBet1 * 2;
         //             plrStat[0]++;
         //         } else if (plrHnd1 == delCrd1 + delCrd2) {
-        //             cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") << ".\n";
+        //             cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") <<
+        //                     ".\n";
         //             plrChps += plrBet1;
         //         } else {
         //             cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
@@ -708,13 +714,13 @@ char drawCrd() {
 
 string appHand(vector<char> &hand, const char &card) {
     string crdOut{};
-
+    cout << "(Remainder Card Value: " << card % 13 << ") ";
     hand.push_back(card);
     // If a King Card
-    if (card % 13 == 0) {
+    if (hand[hand.size() - 1] % 13 == 0) {
         hand[0] += 10;
         hand[1] += 10;
-        switch (card / 13) {
+        switch (hand[hand.size() - 1] / 13) {
             case 1:
                 return "King of Spades";
             case 2:
@@ -728,7 +734,7 @@ string appHand(vector<char> &hand, const char &card) {
         }
     } else {
         // All Other Cards
-        switch (card % 13) {
+        switch (hand[hand.size() - 1] % 13) {
             case 1:
                 if (hand[0] < 11) {
                     hand[0] += 11;
@@ -750,11 +756,11 @@ string appHand(vector<char> &hand, const char &card) {
                 crdOut += "Queen";
                 break;
             default:
-                hand[0] += card % 13;
-                hand[1] += card % 13;
-                crdOut += to_string(card % 13);
+                hand[0] += hand[hand.size() - 1] % 13;
+                hand[1] += hand[hand.size() - 1] % 13;
+                crdOut += to_string(hand[hand.size() - 1] % 13);
         }
-        switch (card / 13) {
+        switch (hand[hand.size() - 1] / 13) {
             case 0:
                 crdOut += " of Spades";
                 break;
