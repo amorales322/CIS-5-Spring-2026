@@ -156,10 +156,10 @@ int main(int argc, char **argv) {
         //
 
         // Draw first player card
-        cout << "Your first card is a(n) " << appHand(plrHnd1, 1) << ".\n";
+        cout << "Your first card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
 
         // Draw second player card
-        cout << "Your second card is a(n) " << appHand(plrHnd1, 1) << ".\n";
+        cout << "Your second card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
 
         // Determines if the two drawn cards are pairs, and updates the plrSplt flag accordingly
         plrSplt = (plrHnd1[2] % 13 == 0 || (plrHnd1[2] % 13 >= 10 && plrHnd1[2] % 13 <= 12)) && (plrHnd1[3] % 13 == 0 || (plrHnd1[3] % 13 >= 10 && plrHnd1[3] % 13 <= 12)) ||
@@ -337,64 +337,73 @@ int main(int argc, char **argv) {
             plrChps += static_cast<unsigned short>(floor(plrWger[0] / 2));
             plrStat[1]++;
         } else {
-            if (gameSte[0] == 1) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push"
-                                                                                                                           : " Game ends in a push") << ".\n";
-                plrChps += plrWger[0];
-            } else if (gameSte[0] == 2) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (plrSplt ? " You win 1.5x your wager for your first hand" : " You win 1.5x your wager") <<
-                        "!\n";
-                plrChps += plrWger[0] + static_cast<unsigned short>(ceil(plrWger[0] * 1.5f));
-                plrStat[0]++;
-            } else if (gameSte[0] == 3) {
-                cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." << (plrSplt ? " You lose your first hand" : " You lose") <<
-                        ".\n";
-                plrStat[1]++;
-            } else if (gameSte[0] == 7) {
-                cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
-                plrStat[1]++;
-            } else {
-                if ((plrHnd1[0] > delHand[0] && plrHnd1[0] <= 21) || plrHnd1[1] > delHand[0]) {
-                    cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand"
-                                                                                                                     : " You win 1x your wager") << "!\n";
-                    plrChps += plrWger[0] * 2;
-                    plrStat[0]++;
-                } else if (plrHnd1[0] == delHand[0] || plrHnd1[1] == delHand[0]) {
-                    cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") <<
-                            ".\n";
+            switch (gameSte[0]) {
+                case 1:
+                    cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push"
+                        : " Game ends in a push") << ".\n";
                     plrChps += plrWger[0];
-                } else {
-                    cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
-                    plrStat[1]++;
-                }
-            }
-
-            if (plrSplt) {
-                if (gameSte[1] == 1) {
-                    cout << "Your second hand and the dealer's hand are both blackjack's. Your second hand ends in a push.\n";
-                    plrChps += plrWger[1];
-                } else if (gameSte[1] == 2) {
-                    cout << "Your second hand is a blackjack! You win 1.5x your wager for your second hand!\n";
-                    plrChps += plrWger[1] + static_cast<unsigned short>(ceil(plrWger[1] * 1.5f));
+                    break;
+                case 2:
+                    cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (
+                        plrSplt ? " You win 1.5x your wager for your first hand" : " You win 1.5x your wager") << "!\n";
+                    plrChps += plrWger[0] + static_cast<unsigned short>(ceil(plrWger[0] * 1.5f));
                     plrStat[0]++;
-                } else if (gameSte[1] == 3) {
-                    cout << "The dealer's hand is a blackjack and your second hand is not. You lose your second hand.\n";
+                    break;
+                case 3:
+                    cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." << (plrSplt ? " You lose your first hand" : " You lose") <<
+                            ".\n";
                     plrStat[1]++;
-                } else if (gameSte[1] == 7) {
-                    cout << "Your second hand has gone bust. You lose your second hand.\n";
+                    break;
+                case 7:
+                    cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                     plrStat[1]++;
-                } else {
-                    if ((plrHnd2[0] > delHand[0] && plrHnd2[0] <= 21) || plrHnd2[1] > delHand[0]) {
-                        cout << "Your second hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
-                        plrChps += plrWger[1] * 2;
+                    break;
+                default:
+                    if ((plrHnd1[0] > delHand[0] && plrHnd1[0] <= 21) || plrHnd1[1] > delHand[0]) {
+                        cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand"
+                                                                                                                         : " You win 1x your wager") << "!\n";
+                        plrChps += plrWger[0] * 2;
                         plrStat[0]++;
-                    } else if (plrHnd2[0] == delHand[0] || plrHnd2[1] == delHand[0]) {
-                        cout << "Your second hand is equal to the dealer's hand. Your second hand is a push.\n";
-                        plrChps += plrWger[1];
+                    } else if (plrHnd1[0] == delHand[0] || plrHnd1[1] == delHand[0]) {
+                        cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push")
+                                << ".\n";
+                        plrChps += plrWger[0];
                     } else {
-                        cout << "Your second hand is smaller than the dealer's hand. You lose your second hand.\n";
+                        cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                         plrStat[1]++;
                     }
+            }
+            if (plrSplt) {
+                switch (gameSte[1]) {
+                    case 1:
+                        cout << "Your second hand and the dealer's hand are both blackjack's. Your second hand ends in a push.\n";
+                        plrChps += plrWger[1];
+                        break;
+                    case 2:
+                        cout << "Your second hand is a blackjack! You win 1.5x your wager for your second hand!\n";
+                        plrChps += plrWger[1] + static_cast<unsigned short>(ceil(plrWger[1] * 1.5f));
+                        plrStat[0]++;
+                        break;
+                    case 3:
+                        cout << "The dealer's hand is a blackjack and your second hand is not. You lose your second hand.\n";
+                        plrStat[1]++;
+                        break;
+                    case 7:
+                        cout << "Your second hand has gone bust. You lose your second hand.\n";
+                        plrStat[1]++;
+                        break;
+                    default:
+                        if ((plrHnd2[0] > delHand[0] && plrHnd2[0] <= 21) || plrHnd2[1] > delHand[0]) {
+                            cout << "Your second hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
+                            plrChps += plrWger[1] * 2;
+                            plrStat[0]++;
+                        } else if (plrHnd2[0] == delHand[0] || plrHnd2[1] == delHand[0]) {
+                            cout << "Your second hand is equal to the dealer's hand. Your second hand is a push.\n";
+                            plrChps += plrWger[1];
+                        } else {
+                            cout << "Your second hand is smaller than the dealer's hand. You lose your second hand.\n";
+                            plrStat[1]++;
+                        }
                 }
             }
         }
@@ -546,6 +555,8 @@ void genShoe(char shoe[]) {
         for (int j{0}; j < 52; j++)
             shoe[(i * 52) + j] = j + 1;
     }
+
+
     // Iterate over deck 128 times and randomize cards every iteration
     for (int i{0}; i < 128; i++) {
         for (int j{0}; j < 415; j++) {
