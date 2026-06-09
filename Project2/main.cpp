@@ -58,7 +58,6 @@ int main(int argc, char **argv) {
     char plrChce{}; // Player Input - Character Input
     float plrInpt{}; // Player Input - Numeric Input
     string plrStr{}; // Used for determining if the save file is valid and not corrupted
-    char curDrwC{}; // Current card drawn
     bool plrSplt{false}; // Game flag to determine if player can split/chooses to split
     bool plrDbDn{false}; // Game flag to determine if player can double down/chooses to double down
 
@@ -71,15 +70,12 @@ int main(int argc, char **argv) {
      * 4: Double Down, 5: Surrender, 6: Stand, 7: Player Bust, 8: Dealer Bust
      */
     char gameSte[2]{0, 0};
-    // char gameSte{00};
 
     // Player Variables/Statistics
     unsigned int plrCash{10000}; // Player Cash
     unsigned int plrChps{}; // Player Casino Chips
 
     unsigned short plrWger[2]{0, 0};
-    // unsigned short plrBet1{}; // Wager for first player hand
-    // unsigned short plrBet2{}; // Wager for second player hand
 
     // Player Statistics
     // 1. Wins
@@ -92,8 +88,6 @@ int main(int argc, char **argv) {
 
     // Dealer Hand/Cards
     vector<char> delHand{0, 0};
-    // char delCrd1{}; // Dealer Hand/Card 1
-    // char delCrd2{}; // Dealer Card 2
 
     /*
      * Initialize Variables
@@ -498,12 +492,12 @@ int main(int argc, char **argv) {
                         plrStat[1]++;
                     }
                 } else {
-                    if (plrHnd1[0] > delHand[0] && plrHnd1[1] > delHand[0]) {
+                    if (plrHnd1[0] > delHand[0] || plrHnd1[1] > delHand[0]) {
                         cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand"
                                                                                                                          : " You win 1x your wager") << "!\n";
                         plrChps += plrWger[0] * 2;
                         plrStat[0]++;
-                    } else if (plrHnd1[0] == delHand[0] || plrHnd1[0] == delHand[0]) {
+                    } else if (plrHnd1[0] == delHand[0] || plrHnd1[1] == delHand[0]) {
                         cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push")
                                 << ".\n";
                         plrChps += plrWger[0];
@@ -542,11 +536,11 @@ int main(int argc, char **argv) {
                             plrStat[1]++;
                         }
                     } else {
-                        if (plrHnd2[0] > delHand[0] && plrHnd2[1] > delHand[0]) {
+                        if (plrHnd2[0] > delHand[0] || plrHnd2[1] > delHand[0]) {
                             cout << "Your second hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
                             plrChps += plrWger[1] * 2;
                             plrStat[0]++;
-                        } else if (plrHnd2[0] == delHand[0] || plrHnd2[0] == delHand[0]) {
+                        } else if (plrHnd2[0] == delHand[0] || plrHnd2[1] == delHand[0]) {
                             cout << "Your second hand is equal to the dealer's hand. Your second hand is a push.\n";
                             plrChps += plrWger[1];
                         } else {
@@ -557,68 +551,65 @@ int main(int argc, char **argv) {
                 }
             }
         }
-        // cout << "Player Statistics:\n* Wins: " << plrStat[0] << "\n* Losses: " << plrStat[1] << "\n* Cash: " << plrCash << "\n* Chips: " << plrChps << "\n";
-        //
-        // // Checks if the player has enough chips and cash to continue playing
-        // if (plrChps < 5 && plrCash < 5) {
-        //     cout << "You do not have enough cash or chips to continue playing. Game over.\n";
-        //     plrChce = 69;
-        // } else {
-        //     // Game End
-        //     cout << "Enter Option (N: New Game, E: Exit & Save): ";
-        //     cin >> plrChce;
-        //     plrChce = static_cast<char>(toupper(plrChce));
-        //
-        //     // Input validation
-        //     while (!isVldOp(plrChce, vector<char>{'N', 'E'})) {
-        //         cout << "Invalid option. Enter new option (N: New Game, E: Exit): ";
-        //         cin >> plrChce;
-        //         plrChce = static_cast<char>(toupper(plrChce));
-        //     }
-        //
-        //     if (plrChce == 78) {
-        //         if (plrCash >= 5) {
-        //             cout << "Would you like to purchase more chips? (Y or N) (Current Amount: " << plrChps << "): ";
-        //             cin >> plrChce;
-        //             plrChce = static_cast<char>(toupper(plrChce));
-        //
-        //             // Input validation
-        //             while (!isVldOp(plrChce, vector<char>{'Y', 'N'})) {
-        //                 cout << "Invalid option. Enter new option (Y or N): ";
-        //                 cin >> plrChce;
-        //                 plrChce = static_cast<char>(toupper(plrChce));
-        //             }
-        //             if (plrChce == 89) {
-        //                 cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
-        //                 cin >> plrInpt;
-        //                 plrInpt = floor(plrInpt);
-        //
-        //                 // Verify purchased chip amount is a valid amount and that the player has enough cash
-        //                 while (!inRange(plrInpt, 5.0f, min(static_cast<float>(plrCash), 65'000.0f))) {
-        //                     cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
-        //                     cin >> plrInpt;
-        //                     plrInpt = floor(plrInpt);
-        //                 }
-        //                 plrChps += static_cast<unsigned short>(floor(plrInpt));
-        //                 plrCash -= static_cast<unsigned short>(floor(plrInpt));
-        //             }
-        //         }
-        //
-        //         // Reset Variables
-        //         curDrwC = 0;
-        //         plrSplt = false;
-        //         plrDbDn = false;
-        //         gameSte = 0;
-        //         plrBet1 = 0;
-        //         plrBet2 = 0;
-        //         plrHnd1 = 0;
-        //         plrHnd2 = 0;
-        //         delCrd1 = 0;
-        //         delCrd2 = 0;
-        //         cout << '\n';
-        //     }
-        // }
-        plrChce = 69;
+        cout << "Player Statistics:\n* Wins: " << plrStat[0] << "\n* Losses: " << plrStat[1] << "\n* Cash: " << plrCash << "\n* Chips: " << plrChps << "\n";
+
+        // Checks if the player has enough chips and cash to continue playing
+        if (plrChps < 5 && plrCash < 5) {
+            cout << "You do not have enough cash or chips to continue playing. Game over.\n";
+            plrChce = 69;
+        } else {
+            // Game End
+            cout << "Enter Option (N: New Game, E: Exit & Save): ";
+            cin >> plrChce;
+            plrChce = static_cast<char>(toupper(plrChce));
+
+            // Input validation
+            while (!isVldOp(plrChce, vector<char>{'N', 'E'})) {
+                cout << "Invalid option. Enter new option (N: New Game, E: Exit): ";
+                cin >> plrChce;
+                plrChce = static_cast<char>(toupper(plrChce));
+            }
+
+            if (plrChce == 78) {
+                if (plrCash >= 5) {
+                    cout << "Would you like to purchase more chips? (Y or N) (Current Amount: " << plrChps << "): ";
+                    cin >> plrChce;
+                    plrChce = static_cast<char>(toupper(plrChce));
+
+                    // Input validation
+                    while (!isVldOp(plrChce, vector<char>{'Y', 'N'})) {
+                        cout << "Invalid option. Enter new option (Y or N): ";
+                        cin >> plrChce;
+                        plrChce = static_cast<char>(toupper(plrChce));
+                    }
+                    if (plrChce == 89) {
+                        cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
+                        cin >> plrInpt;
+                        plrInpt = floor(plrInpt);
+
+                        // Verify purchased chip amount is a valid amount and that the player has enough cash
+                        while (!inRange(plrInpt, 5.0f, min(static_cast<float>(plrCash), 65'000.0f))) {
+                            cout << "Invalid Amount. Enter new amount (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
+                            cin >> plrInpt;
+                            plrInpt = floor(plrInpt);
+                        }
+                        plrChps += static_cast<unsigned short>(floor(plrInpt));
+                        plrCash -= static_cast<unsigned short>(floor(plrInpt));
+                    }
+                }
+
+                // Reset Variables
+                plrSplt = false;
+                plrDbDn = false;
+                gameSte[0] = 0;
+                gameSte[1] = 0;
+                plrWger[0] = 0;
+                plrWger[1] = 0;
+                plrHnd1 = vector<char>{0, 0};
+                delHand = vector<char>{0, 0};
+                cout << '\n';
+            }
+        }
     } while (plrChce != 69);
 
     // Save to Game File
@@ -744,7 +735,6 @@ char drawCrd() {
 
 string appHand(vector<char> &hand, const char &card) {
     string crdOut{};
-    cout << "(Remainder Card Value: " << card % 13 << ") ";
     hand.push_back(card);
     // If a King Card
     if (hand[hand.size() - 1] % 13 == 0) {
