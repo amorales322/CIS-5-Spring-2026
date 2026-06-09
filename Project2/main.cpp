@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
 
 
     /* Keeps track of game state
-     * 1s Place: Player Hand 1, 10s Place: Player Hand 2
+     * Index 0: Player Hand 1, Index 1: Player Hand 2
      * States: 0: Default (continue), 1: Push (Player/Dealer Blackjack), 2: Player Blackjack, 3: Dealer Blackjack
      * 4: Double Down, 5: Surrender, 6: Stand, 7: Player Bust, 8: Dealer Bust
      */
@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
         //
 
         // Draw first player card
-        cout << "Your first card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
+        cout << "Your first card is a(n) " << appHand(plrHnd1, 1) << ".\n";
 
         // Draw second player card
         cout << "Your second card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
@@ -492,7 +492,7 @@ int main(int argc, char **argv) {
                         plrStat[1]++;
                     }
                 } else {
-                    if (plrHnd1[0] > delHand[0] || plrHnd1[1] > delHand[0]) {
+                    if ((plrHnd1[0] > delHand[0] && plrHnd1[0] <= 21) || plrHnd1[1] > delHand[0]) {
                         cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand"
                                                                                                                          : " You win 1x your wager") << "!\n";
                         plrChps += plrWger[0] * 2;
@@ -536,7 +536,7 @@ int main(int argc, char **argv) {
                             plrStat[1]++;
                         }
                     } else {
-                        if (plrHnd2[0] > delHand[0] || plrHnd2[1] > delHand[0]) {
+                        if ((plrHnd2[0] > delHand[0] && plrHnd2[0] <= 21) || plrHnd2[1] > delHand[0]) {
                             cout << "Your second hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
                             plrChps += plrWger[1] * 2;
                             plrStat[0]++;
@@ -606,6 +606,7 @@ int main(int argc, char **argv) {
                 plrWger[0] = 0;
                 plrWger[1] = 0;
                 plrHnd1 = vector<char>{0, 0};
+                plrHnd2 = vector<char>{0, 0};
                 delHand = vector<char>{0, 0};
                 cout << '\n';
             }
