@@ -58,6 +58,7 @@ int main(int argc, char **argv) {
     string plrStr{}; // Used for determining if the save file is valid and not corrupted
     bool plrSplt{false}; // Game flag to determine if player can split/chooses to split
     bool plrDbDn{false}; // Game flag to determine if player can double down/chooses to double down
+    bool sndMove{false};
 
     fstream sveFile{"./blackjackSaveFile.txt", ios::in}; // Save File
 
@@ -155,10 +156,10 @@ int main(int argc, char **argv) {
         //
 
         // Draw first player card
-        cout << "Your first card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
+        cout << "Your first card is a(n) " << appHand(plrHnd1, 1) << ".\n";
 
         // Draw second player card
-        cout << "Your second card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
+        cout << "Your second card is a(n) " << appHand(plrHnd1, 1) << ".\n";
 
         // Determines if the two drawn cards are pairs, and updates the plrSplt flag accordingly
         plrSplt = (plrHnd1[2] % 13 == 0 || (plrHnd1[2] % 13 >= 10 && plrHnd1[2] % 13 <= 12)) && (plrHnd1[3] % 13 == 0 || (plrHnd1[3] % 13 >= 10 && plrHnd1[3] % 13 <= 12)) ||
@@ -204,125 +205,104 @@ int main(int argc, char **argv) {
 
             // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
             plrDbDn = plrChps >= plrWger[0];
-            cout << "Enter Option (Player Hand 1: " << outHndT(plrHnd1[0], plrHnd1[1]) << ", Dealer Hand: " << static_cast<int>(delHand[0]) << ")\nS: Stand, H: Hit" << (
-                plrDbDn ? ", D: Double Down" : "") << (!plrSplt ? ", X: Surrender" : "") << " -> ";
-            cin >> plrChce;
-            plrChce = static_cast<char>(toupper(plrChce));
 
-            // Input validation based on game flags and whether the player split their cards and can double down
-            if (plrSplt && plrDbDn)
-                vldInpt(plrChce, vector<char>{'S', 'H', 'D'}, "S: Stand, H: Hit, D: Double Down)");
-            else if (plrSplt && !plrDbDn)
-                vldInpt(plrChce, vector<char>{'S', 'H'}, "S: Stand, H: Hit");
-            else if (!plrSplt && plrDbDn)
-                vldInpt(plrChce, vector<char>{'S', 'H', 'D', 'X'}, "S: Stand, H: Hit, D: Double Down, X: Surrender");
-            else
-                vldInpt(plrChce, vector<char>{'S', 'H', 'X'}, "S: Stand, H: Hit, X: Surrender");
-
-            switch (plrChce) {
-                case 'X':
-                    gameSte[0] = 5;
-                    break;
-                case 'S':
-                    cout << "You have chosen to stand.\n";
-                    gameSte[0] = 6;
-                    break;
-                case 'D':
-                    cout << "You have chosen to double down and double your wager. ";
-                    plrChps -= plrWger[0];
-                    plrWger[0] *= 2;
-                    cout << "Your third card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
-                    if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
-                        gameSte[0] = 7;
-                    else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
-                        gameSte[0] = 2;
-                    else
-                        gameSte[0] = 4;
-                    break;
-                default:
-                    cout << "Your next card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
-                    if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
-                        gameSte[0] = 7;
-                    else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
-                        gameSte[0] = 2;
-            }
-
-            while (gameSte[0] == 0) {
-                cout << "Enter Option (Player Hand 1: " << outHndT(plrHnd1[0], plrHnd1[1]) << ", Dealer Hand: " << static_cast<int>(delHand[0]) << ")\nS: Stand, H: Hit -> ";
+            do {
+                cout << "Enter Option (Player Hand 1: " << outHndT(plrHnd1[0], plrHnd1[1]) << ", Dealer Hand: " << static_cast<int>(delHand[0]) << ")\nS: Stand, H: Hit" << (
+                    plrDbDn && !sndMove ? ", D: Double Down" : "") << (!plrSplt && !sndMove ? ", X: Surrender" : "") << " -> ";
                 cin >> plrChce;
                 plrChce = static_cast<char>(toupper(plrChce));
 
-                // Input validation
-                vldInpt(plrChce, vector<char>{'S', 'H'}, "S: Stand, H: Hit");
-                if (plrChce == 83)
-                    gameSte[0] = 6;
-                else {
-                    cout << "Your next card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
-                    if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
-                        gameSte[0] = 7;
-                    else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
-                        gameSte[0] = 2;
+                // Input validation based on game flags and whether the player split their cards and can double down
+                if (sndMove) {
+                    vldInpt(plrChce, vector<char>{'S', 'H'}, "S: Stand, H: Hit");
+                } else {
+                    if (plrSplt && plrDbDn)
+                        vldInpt(plrChce, vector<char>{'S', 'H', 'D'}, "S: Stand, H: Hit, D: Double Down)");
+                    else if (plrSplt && !plrDbDn)
+                        vldInpt(plrChce, vector<char>{'S', 'H'}, "S: Stand, H: Hit");
+                    else if (!plrSplt && plrDbDn)
+                        vldInpt(plrChce, vector<char>{'S', 'H', 'D', 'X'}, "S: Stand, H: Hit, D: Double Down, X: Surrender");
+                    else
+                        vldInpt(plrChce, vector<char>{'S', 'H', 'X'}, "S: Stand, H: Hit, X: Surrender");
                 }
-            }
+
+                switch (plrChce) {
+                    case 'X':
+                        gameSte[0] = 5;
+                        break;
+                    case 'S':
+                        cout << "You have chosen to stand.\n";
+                        gameSte[0] = 6;
+                        break;
+                    case 'D':
+                        cout << "You have chosen to double down and double your wager. ";
+                        plrChps -= plrWger[0];
+                        plrWger[0] *= 2;
+                        cout << "Your third card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
+                        if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
+                            gameSte[0] = 7;
+                        else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
+                            gameSte[0] = 2;
+                        else
+                            gameSte[0] = 4;
+                        break;
+                    default:
+                        cout << "Your next card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
+                        if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
+                            gameSte[0] = 7;
+                        else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
+                            gameSte[0] = 2;
+                        else
+                            sndMove = true;
+                }
+            } while (gameSte[0] == 0);
+            sndMove = false;
 
             // Player second hand turn if they chose to split their hand
             if (plrSplt) {
                 // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
                 plrDbDn = plrChps >= plrWger[1];
 
-                cout << "Enter Option (Player Hand 2: " << outHndT(plrHnd2[0], plrHnd2[1]) << ", Dealer Hand: " << static_cast<int>(delHand[0]) << ")\nS: Stand, H: Hit" << (
-                    plrDbDn ? ", D: Double Down" : "") << " -> ";
-                cin >> plrChce;
-                plrChce = static_cast<char>(toupper(plrChce));
-
-                // Input validation based on if the player can double down or not
-                if (plrDbDn)
-                    vldInpt(plrChce, vector<char>{'S', 'H', 'D'}, "S: Stand, H: Hit, D: Double Down");
-                else
-                    vldInpt(plrChce, vector<char>{'S', 'H'}, "S: Stand, H: Hit");
-
-                switch (plrChce) {
-                    case 'S':
-                        cout << "You have chosen to stand.\n";
-                        gameSte[1] += 6;
-                        break;
-                    case 'D':
-                        cout << "You have chosen to double down and double your wager. ";
-                        plrChps -= plrWger[1];
-                        plrWger[1] *= 2;
-                        cout << "Your second card is a(n) " << appHand(plrHnd2, drawCrd()) << ".\n";
-                        if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
-                            gameSte[1] = 7;
-                        else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
-                            gameSte[1] = 2;
-                        else
-                            gameSte[1] = 4;
-                        break;
-                    default:
-                        cout << "Your next card is a(n) " << appHand(plrHnd2, drawCrd()) << ".\n";
-                        if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
-                            gameSte[1] = 7;
-                        else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
-                            gameSte[1] = 2;
-                        break;
-                }
-
-                while (gameSte[1] == 0) {
-                    cout << "Enter Option (Player Hand 2: " << outHndT(plrHnd2[0], plrHnd2[1]) << ", Dealer Hand: " << static_cast<int>(delHand[0]) << ")\nS: Stand, H: Hit -> ";
+                do {
+                    cout << "Enter Option (Player Hand 2: " << outHndT(plrHnd2[0], plrHnd2[1]) << ", Dealer Hand: " << static_cast<int>(delHand[0]) << ")\nS: Stand, H: Hit" << (
+                        plrDbDn && !sndMove ? ", D: Double Down" : "") << " -> ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
-                    vldInpt(plrChce, vector<char>{'S', 'H'}, "S: Stand, H: Hit");
 
-                    if (plrChce == 83)
-                        gameSte[1] = 6;
-                    else {
-                        cout << "Your next card is a(n) " << appHand(plrHnd2, drawCrd()) << ".\n";
-                        if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
-                            gameSte[1] = 7;
-                        else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
-                            gameSte[1] = 2;
+                    // Input validation based on if the player can double down or not
+                    if (plrDbDn && !sndMove)
+                        vldInpt(plrChce, vector<char>{'S', 'H', 'D'}, "S: Stand, H: Hit, D: Double Down");
+                    else
+                        vldInpt(plrChce, vector<char>{'S', 'H'}, "S: Stand, H: Hit");
+
+                    switch (plrChce) {
+                        case 'S':
+                            cout << "You have chosen to stand.\n";
+                            gameSte[1] += 6;
+                            break;
+                        case 'D':
+                            cout << "You have chosen to double down and double your wager. ";
+                            plrChps -= plrWger[1];
+                            plrWger[1] *= 2;
+                            cout << "Your second card is a(n) " << appHand(plrHnd2, drawCrd()) << ".\n";
+                            if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
+                                gameSte[1] = 7;
+                            else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
+                                gameSte[1] = 2;
+                            else
+                                gameSte[1] = 4;
+                            break;
+                        default:
+                            cout << "Your next card is a(n) " << appHand(plrHnd2, drawCrd()) << ".\n";
+                            if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
+                                gameSte[1] = 7;
+                            else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
+                                gameSte[1] = 2;
+                            else
+                                sndMove = true;
+                            break;
                     }
-                }
+                } while (gameSte[1] == 0);
             }
 
             // Checks if the player's hand(s) have already gone bust or not
