@@ -26,10 +26,6 @@ bool isVldOp(const char &input, vector<char> vldOpts);
 
 bool inRange(const float &input, const float &min, const float &max);
 
-int max(const int &a, const int &b);
-
-float max(const float &a, const float &b);
-
 int min(const int &a, const int &b);
 
 float min(const float &a, const float &b);
@@ -160,7 +156,7 @@ int main(int argc, char **argv) {
         //
 
         // Draw first player card
-        cout << "Your first card is a(n) " << appHand(plrHnd1, 1) << ".\n";
+        cout << "Your first card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
 
         // Draw second player card
         cout << "Your second card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
@@ -209,9 +205,8 @@ int main(int argc, char **argv) {
                     appHand(plrHnd2, popBkHnd(plrHnd1));
                     plrWger[1] = plrWger[0];
                     plrChps -= plrWger[1];
-                } else {
+                } else
                     plrSplt = false;
-                }
             } else
                 plrSplt = false;
 
@@ -262,35 +257,19 @@ int main(int argc, char **argv) {
                     plrChps -= plrWger[0];
                     plrWger[0] *= 2;
                     cout << "Your third card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
-                    if (plrHnd1[0] == plrHnd1[1]) {
-                        if (plrHnd1[0] > 21)
-                            gameSte[0] = 7;
-                        else if (plrHnd1[0] == 21)
-                            gameSte[0] = 2;
-                        else
-                            gameSte[0] = 4;
-                    } else {
-                        if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
-                            gameSte[0] = 7;
-                        else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
-                            gameSte[0] = 2;
-                        else
-                            gameSte[0] = 4;
-                    }
+                    if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
+                        gameSte[0] = 7;
+                    else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
+                        gameSte[0] = 2;
+                    else
+                        gameSte[0] = 4;
                     break;
                 default:
                     cout << "Your next card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
-                    if (plrHnd1[0] == plrHnd1[1]) {
-                        if (plrHnd1[0] > 21)
-                            gameSte[0] = 7;
-                        else if (plrHnd1[0] == 21)
-                            gameSte[0] = 2;
-                    } else {
-                        if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
-                            gameSte[0] = 7;
-                        else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
-                            gameSte[0] = 2;
-                    }
+                    if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
+                        gameSte[0] = 7;
+                    else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
+                        gameSte[0] = 2;
             }
 
             while (gameSte[0] == 0) {
@@ -308,17 +287,10 @@ int main(int argc, char **argv) {
                     gameSte[0] = 6;
                 else {
                     cout << "Your next card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
-                    if (plrHnd1[0] == plrHnd1[1]) {
-                        if (plrHnd1[0] > 21)
-                            gameSte[0] = 7;
-                        else if (plrHnd1[0] == 21)
-                            gameSte[0] = 2;
-                    } else {
-                        if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
-                            gameSte[0] = 7;
-                        else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
-                            gameSte[0] = 2;
-                    }
+                    if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
+                        gameSte[0] = 7;
+                    else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
+                        gameSte[0] = 2;
                 }
             }
 
@@ -357,35 +329,19 @@ int main(int argc, char **argv) {
                         plrChps -= plrWger[1];
                         plrWger[1] *= 2;
                         cout << "Your second card is a(n) " << appHand(plrHnd2, drawCrd()) << ".\n";
-                        if (plrHnd2[0] == plrHnd2[1]) {
-                            if (plrHnd2[0] > 21)
-                                gameSte[1] = 7;
-                            else if (plrHnd2[0] == 21)
-                                gameSte[1] = 2;
-                            else
-                                gameSte[1] = 4;
-                        } else {
-                            if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
-                                gameSte[1] = 7;
-                            else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
-                                gameSte[1] = 2;
-                            else
-                                gameSte[1] = 4;
-                        }
+                        if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
+                            gameSte[1] = 7;
+                        else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
+                            gameSte[1] = 2;
+                        else
+                            gameSte[1] = 4;
                         break;
                     default:
                         cout << "Your next card is a(n) " << appHand(plrHnd2, drawCrd()) << ".\n";
-                        if (plrHnd2[0] == plrHnd2[1]) {
-                            if (plrHnd2[0] > 21)
-                                gameSte[1] = 7;
-                            else if (plrHnd2[0] == 21)
-                                gameSte[1] = 2;
-                        } else {
-                            if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
-                                gameSte[1] = 7;
-                            else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
-                                gameSte[1] = 2;
-                        }
+                        if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
+                            gameSte[1] = 7;
+                        else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
+                            gameSte[1] = 2;
                         break;
                 }
 
@@ -393,7 +349,7 @@ int main(int argc, char **argv) {
                     cout << "Enter Option (Player Hand 2: " << outHndT(plrHnd2[0], plrHnd2[1]) << ", Dealer Hand: " << static_cast<int>(delHand[0]) << ")\nS: Stand, H: Hit -> ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
-                    while (plrChce != 83 && plrChce != 72) {
+                    while (!isVldOp(plrChce, vector<char>{'S', 'H'})) {
                         cout << "Invalid option. Enter new option (S: Stand, H: Hit): ";
                         cin >> plrChce;
                         plrChce = static_cast<char>(toupper(plrChce));
@@ -403,46 +359,29 @@ int main(int argc, char **argv) {
                         gameSte[1] = 6;
                     else {
                         cout << "Your next card is a(n) " << appHand(plrHnd2, drawCrd()) << ".\n";
-                        if (plrHnd2[0] == plrHnd2[1]) {
-                            if (plrHnd2[0] > 21)
-                                gameSte[1] = 7;
-                            else if (plrHnd2[0] == 21)
-                                gameSte[1] = 2;
-                        } else {
-                            if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
-                                gameSte[1] = 7;
-                            else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
-                                gameSte[1] = 2;
-                        }
+                        if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
+                            gameSte[1] = 7;
+                        else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
+                            gameSte[1] = 2;
                     }
                 }
             }
 
             // Checks if the player's hand(s) have already gone bust or not
             if (gameSte[0] != 5 && ((!plrSplt && gameSte[0] != 7) || (plrSplt && (gameSte[0] != 7 || gameSte[1] != 7)))) {
-                /*
-                 * Dealer's turn
-                 */
+                // Dealer's Turn
                 cout << "The dealer's second card is a(n)" << appHand(delHand, delHand[3]) << ".\n";
                 popBkHnd(delHand);
                 // Dealer stands on soft 17
-                while (delHand[0] < 17) {
+                while (delHand[0] < 17)
                     cout << "The dealer's draws another card and it is a(n)" << appHand(delHand, drawCrd()) << ".\n";
-                }
 
                 if (delHand[0] > 21)
                     gameSte[0] = 8;
                 else if (delHand[0] == 21) {
                     // Updates gameSte variable based on if the player has a blackjack or not
-                    if (gameSte[0] == 2)
-                        gameSte[0] = 1;
-                    else
-                        gameSte[0] = 3;
-
-                    if (gameSte[1] == 2)
-                        gameSte[1] = 1;
-                    else
-                        gameSte[1] = 3;
+                    gameSte[0] = gameSte[0] == 2 ? 1 : 3;
+                    gameSte[1] = gameSte[1] == 2 ? 1 : 3;
                 }
             }
         }
@@ -477,34 +416,18 @@ int main(int argc, char **argv) {
                 cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                 plrStat[1]++;
             } else {
-                if (plrHnd1[0] == plrHnd1[1]) {
-                    if (plrHnd1[0] > delHand[0]) {
-                        cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand"
-                                                                                                                         : " You win 1x your wager") << "!\n";
-                        plrChps += plrWger[0] * 2;
-                        plrStat[0]++;
-                    } else if (plrHnd1[0] == delHand[0]) {
-                        cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push")
-                                << ".\n";
-                        plrChps += plrWger[0];
-                    } else {
-                        cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
-                        plrStat[1]++;
-                    }
+                if ((plrHnd1[0] > delHand[0] && plrHnd1[0] <= 21) || plrHnd1[1] > delHand[0]) {
+                    cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand"
+                                                                                                                     : " You win 1x your wager") << "!\n";
+                    plrChps += plrWger[0] * 2;
+                    plrStat[0]++;
+                } else if (plrHnd1[0] == delHand[0] || plrHnd1[1] == delHand[0]) {
+                    cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push") <<
+                            ".\n";
+                    plrChps += plrWger[0];
                 } else {
-                    if ((plrHnd1[0] > delHand[0] && plrHnd1[0] <= 21) || plrHnd1[1] > delHand[0]) {
-                        cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand"
-                                                                                                                         : " You win 1x your wager") << "!\n";
-                        plrChps += plrWger[0] * 2;
-                        plrStat[0]++;
-                    } else if (plrHnd1[0] == delHand[0] || plrHnd1[1] == delHand[0]) {
-                        cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push")
-                                << ".\n";
-                        plrChps += plrWger[0];
-                    } else {
-                        cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
-                        plrStat[1]++;
-                    }
+                    cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
+                    plrStat[1]++;
                 }
             }
 
@@ -523,30 +446,16 @@ int main(int argc, char **argv) {
                     cout << "Your second hand has gone bust. You lose your second hand.\n";
                     plrStat[1]++;
                 } else {
-                    if (plrHnd2[0] == plrHnd2[1]) {
-                        if (plrHnd2[0] > delHand[0]) {
-                            cout << "Your second hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
-                            plrChps += plrWger[1] * 2;
-                            plrStat[0]++;
-                        } else if (plrHnd2[0] == delHand[0]) {
-                            cout << "Your second hand is equal to the dealer's hand. Your second hand is a push.\n";
-                            plrChps += plrWger[1];
-                        } else {
-                            cout << "Your second hand is smaller than the dealer's hand. You lose your second hand.\n";
-                            plrStat[1]++;
-                        }
+                    if ((plrHnd2[0] > delHand[0] && plrHnd2[0] <= 21) || plrHnd2[1] > delHand[0]) {
+                        cout << "Your second hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
+                        plrChps += plrWger[1] * 2;
+                        plrStat[0]++;
+                    } else if (plrHnd2[0] == delHand[0] || plrHnd2[1] == delHand[0]) {
+                        cout << "Your second hand is equal to the dealer's hand. Your second hand is a push.\n";
+                        plrChps += plrWger[1];
                     } else {
-                        if ((plrHnd2[0] > delHand[0] && plrHnd2[0] <= 21) || plrHnd2[1] > delHand[0]) {
-                            cout << "Your second hand is larger than the dealer's hand. You are paid 1x your wager for your second hand!\n";
-                            plrChps += plrWger[1] * 2;
-                            plrStat[0]++;
-                        } else if (plrHnd2[0] == delHand[0] || plrHnd2[1] == delHand[0]) {
-                            cout << "Your second hand is equal to the dealer's hand. Your second hand is a push.\n";
-                            plrChps += plrWger[1];
-                        } else {
-                            cout << "Your second hand is smaller than the dealer's hand. You lose your second hand.\n";
-                            plrStat[1]++;
-                        }
+                        cout << "Your second hand is smaller than the dealer's hand. You lose your second hand.\n";
+                        plrStat[1]++;
                     }
                 }
             }
@@ -626,7 +535,6 @@ int main(int argc, char **argv) {
 }
 
 // Functions
-
 bool isVldOp(const char &input, vector<char> vldOpts) {
     // Bubble Sort
     bool isChng{false};
@@ -663,18 +571,6 @@ bool isVldOp(const char &input, vector<char> vldOpts) {
 
 bool inRange(const float &input, const float &min, const float &max) {
     return input <= max && input >= min;
-}
-
-int max(const int &a, const int &b) {
-    if (a >= b)
-        return a;
-    return b;
-}
-
-float max(const float &a, const float &b) {
-    if (a >= b)
-        return a;
-    return b;
 }
 
 int min(const int &a, const int &b) {
@@ -733,7 +629,6 @@ char drawCrd() {
     return shoe[deckIdx++];
 }
 
-
 string appHand(vector<char> &hand, const char &card) {
     string crdOut{};
     hand.push_back(card);
@@ -753,50 +648,49 @@ string appHand(vector<char> &hand, const char &card) {
             default:
                 exit(1);
         }
-    } else {
-        // All Other Cards
-        switch (hand[hand.size() - 1] % 13) {
-            case 1:
-                if (hand[0] < 11) {
-                    hand[0] += 11;
-                    hand[1] += 1;
-                } else {
-                    hand[0] += 1;
-                    hand[1] += 1;
-                }
-                crdOut += "Ace";
-                break;
-            case 11:
-                hand[0] += 10;
-                hand[1] += 10;
-                crdOut += "Jack";
-                break;
-            case 12:
-                hand[0] += 10;
-                hand[1] += 10;
-                crdOut += "Queen";
-                break;
-            default:
-                hand[0] += hand[hand.size() - 1] % 13;
-                hand[1] += hand[hand.size() - 1] % 13;
-                crdOut += to_string(hand[hand.size() - 1] % 13);
-        }
-        switch (hand[hand.size() - 1] / 13) {
-            case 0:
-                crdOut += " of Spades";
-                break;
-            case 1:
-                crdOut += " of Hearts";
-                break;
-            case 2:
-                crdOut += " of Diamonds";
-                break;
-            case 3:
-                crdOut += " of Clubs";
-                break;
-            default:
-                exit(1);
-        }
+    }
+    // All Other Cards
+    switch (hand[hand.size() - 1] % 13) {
+        case 1:
+            if (hand[0] < 11) {
+                hand[0] += 11;
+                hand[1] += 1;
+            } else {
+                hand[0] += 1;
+                hand[1] += 1;
+            }
+            crdOut += "Ace";
+            break;
+        case 11:
+            hand[0] += 10;
+            hand[1] += 10;
+            crdOut += "Jack";
+            break;
+        case 12:
+            hand[0] += 10;
+            hand[1] += 10;
+            crdOut += "Queen";
+            break;
+        default:
+            hand[0] += hand[hand.size() - 1] % 13;
+            hand[1] += hand[hand.size() - 1] % 13;
+            crdOut += to_string(hand[hand.size() - 1] % 13);
+    }
+    switch (hand[hand.size() - 1] / 13) {
+        case 0:
+            crdOut += " of Spades";
+            break;
+        case 1:
+            crdOut += " of Hearts";
+            break;
+        case 2:
+            crdOut += " of Diamonds";
+            break;
+        case 3:
+            crdOut += " of Clubs";
+            break;
+        default:
+            exit(1);
     }
     return crdOut;
 }
