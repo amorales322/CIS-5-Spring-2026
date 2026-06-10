@@ -24,7 +24,7 @@ using namespace std;
 // Function Prototypes
 bool isVldOp(const char &input, vector<char> vldOpts);
 
-void vldInpt(char &input, vector<char> vldOpts, const char message[]);
+void vldInpt(char &input, vector<char> vldOpts, const char message[] = "Y or N");
 
 bool inRange(const float &input, const float &min, const float &max);
 
@@ -99,7 +99,7 @@ int main(int argc, char **argv) {
         plrChce = static_cast<char>(toupper(plrChce));
 
         // Input validation
-        vldInpt(plrChce, vector<char>{'Y', 'N'}, "Y or N");
+        vldInpt(plrChce, vector<char>{'Y', 'N'});
 
         if (plrChce == 89) {
             sveFile >> plrStr;
@@ -193,7 +193,7 @@ int main(int argc, char **argv) {
                 plrChce = static_cast<char>(toupper(plrChce));
 
                 // Input validation
-                vldInpt(plrChce, vector<char>{'Y', 'N'}, "Y or N");
+                vldInpt(plrChce, vector<char>{'Y', 'N'});
 
                 if (plrChce == 89) {
                     appHand(plrHnd2, popBkHnd(plrHnd1));
@@ -430,7 +430,7 @@ int main(int argc, char **argv) {
                     plrChce = static_cast<char>(toupper(plrChce));
 
                     // Input validation
-                    vldInpt(plrChce, vector<char>{'Y', 'N'}, "Y or N");
+                    vldInpt(plrChce, vector<char>{'Y', 'N'});
 
                     if (plrChce == 89) {
                         cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
