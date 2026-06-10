@@ -22,26 +22,38 @@ using namespace std;
 // Science, Math, Conversions, Dimensions
 
 // Function Prototypes
+
+// Checks if the input is a valid option
 bool isVldOp(const char &input, vector<char> vldOpts);
 
+// Validates user input and prompts user until they enter a valid input option
 void vldInpt(char &input, vector<char> vldOpts, const char message[] = "Y or N");
 
+// Determines if user input is within a specified range [min, max]
 bool inRange(const float &input, const float &min, const float &max);
 
+// Returns the minimum - Integer overload
 int min(const int &a, const int &b);
 
+// Returns the minimum - Float overload
 float min(const float &a, const float &b);
 
+// Formats a number with commas
 string fmtNum(const int &number);
 
+// Generates a shoe of cards
 void genShoe(char shoe[]);
 
+// Draws a card
 char drawCrd();
 
+// Appends to a hand and updates the hand total
 string appHand(vector<char> &hand, const char &card);
 
+// Removes the last card from the hand and updates the hand total
 char popBkHnd(vector<char> &hand);
 
+// Outputs the hand total based on if aces are present and how high the hand totals are
 string outHndT(const char &total1, const char &total2);
 
 // Execution begins here at main
@@ -53,43 +65,49 @@ int main(int argc, char **argv) {
      * Declare Variables
      */
 
-    char plrChce{}; // Player Input - Character Input
-    float plrInpt{}; // Player Input - Numeric Input
-    string plrStr{}; // Used for determining if the save file is valid and not corrupted
+    char plrChce{};      // Player Input - Character Input
+    float plrInpt{};     // Player Input - Numeric Input
+    string plrStr{};     // Used for determining if the save file is valid and not corrupted
     bool plrSplt{false}; // Game flag to determine if player can split/chooses to split
     bool plrDbDn{false}; // Game flag to determine if player can double down/chooses to double down
-    bool sndMove{false};
+    bool sndMove{false}; // Game flag to determine if the player is on their second and later move
 
     fstream sveFile{"./blackjackSaveFile.txt", ios::in}; // Save File
 
 
     /* Keeps track of game state
      * Index 0: Player Hand 1, Index 1: Player Hand 2
-     * States: 0: Default (continue), 1: Push (Player/Dealer Blackjack), 2: Player Blackjack, 3: Dealer Blackjack
+     * States: 0: Default (Continue), 1: Push (Player/Dealer Blackjack), 2: Player Blackjack, 3: Dealer Blackjack
      * 4: Double Down, 5: Surrender, 6: Stand, 7: Player Bust, 8: Dealer Bust
      */
     char gameSte[2]{0, 0};
 
     // Player Variables/Statistics
     unsigned int plrCash{10000}; // Player Cash
-    unsigned int plrChps{}; // Player Casino Chips
+    unsigned int plrChps{};      // Player Casino Chips
 
+    // Player Wagers for First & Second Hand
     unsigned short plrWger[2]{0, 0};
 
-    // Player Statistics
-    // 1. Wins
-    // 2. Losses
+
+    /* Player Statistics
+     * 1. Wins
+     * 2. Losses
+     */
     unsigned short plrStat[2]{0, 0};
 
-    // Player Hands
+    /* Player Hands
+     * Index 0: Hand total w/ ace as a value of 11
+     * Index 1: Hand total w/ ace as a value of 1
+     */
     vector<char> plrHnd1{0, 0}; // Player Hand 1
     vector<char> plrHnd2{0, 0}; // Player Hand 2
 
-    // Dealer Hand/Cards
+    // Dealer Hand - Only Index 0 is used for hand total
     vector<char> delHand{0, 0};
 
     /*
-     * Initialize Variables
+     *  Initialize Variables
      */
 
     // Check if default save file exists
@@ -98,9 +116,10 @@ int main(int argc, char **argv) {
         cin >> plrChce;
         plrChce = static_cast<char>(toupper(plrChce));
 
-        // Input validation
+        // Input validation using vldInpt() function
         vldInpt(plrChce, vector<char>{'Y', 'N'});
 
+        // If the player chooses to load their save file
         if (plrChce == 89) {
             sveFile >> plrStr;
             // Checks if string marker is inside the save file, which determines if the save file is valid or corrupted
@@ -120,7 +139,9 @@ int main(int argc, char **argv) {
     // Reopens save file for writing
     sveFile.open("./blackjackSaveFile.txt", ios::out | ios::trunc);
 
-    // Purchase Chips
+    /*
+     *  Purchase Chips
+     */
     cout << "How much money would you like to spend to buy chips (Whole $ only) [$5 to $" << fmtNum(min(plrCash, 65'000)) << "]: ";
     cin >> plrInpt;
     plrInpt = floor(plrInpt);
@@ -133,16 +154,21 @@ int main(int argc, char **argv) {
     }
     plrChps = static_cast<unsigned int>(floor(plrInpt));
     plrCash -= plrChps;
+    // Separator for formatting
     cout << '<' << string(88, '-') << '>';
 
-    // Game Loop
+    /*
+     *  Main Game Loop
+     */
     do {
-        // Get player wager
+        /*
+         *  Get Player Wager
+         */
         cout << "\nEnter wager amount (Whole $ only) [$5 to $" << fmtNum(min(plrChps, 10'000)) << "]: ";
         cin >> plrInpt;
         plrInpt = floor(plrInpt);
 
-        // Verify player wager is valid amount and that the player has enough chips
+        // Verify player wager is a valid amount and that the player has enough chips
         while (!inRange(plrInpt, 5.0f, min(static_cast<float>(plrChps), 10'000.0f))) {
             cout << "Invalid amount. Enter new amount (Whole $ only) [$5 to $" << fmtNum(min(plrChps, 10'000)) << "]: ";
             cin >> plrInpt;
@@ -152,50 +178,45 @@ int main(int argc, char **argv) {
         plrWger[0] = static_cast<unsigned short>(floor(plrInpt));
         plrChps -= plrWger[0];
 
-        //
-        // Player Card Drawing
-        //
-
-        // Draw first player card
+        /*
+         *  Player Card Drawing
+         */
         cout << "Your first card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
-
-        // Draw second player card
         cout << "Your second card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
 
         // Determines if the two drawn cards are pairs, and updates the plrSplt flag accordingly
         plrSplt = (plrHnd1[2] % 13 == 0 || (plrHnd1[2] % 13 >= 10 && plrHnd1[2] % 13 <= 12)) && (plrHnd1[3] % 13 == 0 || (plrHnd1[3] % 13 >= 10 && plrHnd1[3] % 13 <= 12)) ||
                   plrHnd1[2] % 13 == plrHnd1[3] % 13;
 
-        //
-        // Dealer Draw Cards
-        //
-
-        // Draw first dealer card
+        /*
+         *  Dealer Draw Cards
+         */
         cout << "The dealer's first card is a(n) " << appHand(delHand, drawCrd()) << ".\n";
-
-        // Draw second dealer card
         appHand(delHand, drawCrd());
 
-        // Check if player has a blackjack
+        // Check if the player has a blackjack
         if (plrHnd1[0] == 21)
             gameSte[0] = 2;
 
-        // Check if dealer has a blackjack
+        // Check if the dealer has a blackjack
         if (delHand[0] == 21)
             gameSte[0] = gameSte[0] == 2 ? 1 : 3;
 
-
+        /*
+         *  Game Loop (No Blackjack)
+         */
         if (gameSte[0] == 0) {
-            // Player card splitting - Checks if the player was dealt a pair and if the player have enough chips to split
+            // Player card splitting - Checks if the player was dealt a pair and if they have enough chips to split
             if (plrSplt && plrChps >= plrWger[0]) {
                 cout << "You have been dealt a pair, would you like to split your cards? (Y or N): ";
                 cin >> plrChce;
                 plrChce = static_cast<char>(toupper(plrChce));
 
-                // Input validation
+                // Input validation using vldInpt() function
                 vldInpt(plrChce, vector<char>{'Y', 'N'});
 
                 if (plrChce == 89) {
+                    // Pop last card from player hand 1 and append to player hand 2
                     appHand(plrHnd2, popBkHnd(plrHnd1));
                     plrWger[1] = plrWger[0];
                     plrChps -= plrWger[1];
@@ -207,13 +228,17 @@ int main(int argc, char **argv) {
             // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
             plrDbDn = plrChps >= plrWger[0];
 
+            /*
+             *  Player First Hand Game Loop
+             */
             do {
+                // Output player options based on if this is the first player move or not, and on whether the player split their cards and can double down
                 cout << "Enter Option (Player Hand 1: " << outHndT(plrHnd1[0], plrHnd1[1]) << ", Dealer Hand: " << static_cast<int>(delHand[0]) << ")\nS: Stand, H: Hit" << (
                     plrDbDn && !sndMove ? ", D: Double Down" : "") << (!plrSplt && !sndMove ? ", X: Surrender" : "") << " -> ";
                 cin >> plrChce;
                 plrChce = static_cast<char>(toupper(plrChce));
 
-                // Input validation based on game flags and whether the player split their cards and can double down
+                // Input validation using vldInpt() function based on if this is the first player move or not, and on whether the player split their cards and can double down
                 if (sndMove) {
                     vldInpt(plrChce, vector<char>{'S', 'H'}, "S: Stand, H: Hit");
                 } else {
@@ -227,19 +252,21 @@ int main(int argc, char **argv) {
                         vldInpt(plrChce, vector<char>{'S', 'H', 'X'}, "S: Stand, H: Hit, X: Surrender");
                 }
 
+                // Player Choices
                 switch (plrChce) {
-                    case 'X':
+                    case 'X': // Surrender
                         gameSte[0] = 5;
                         break;
-                    case 'S':
+                    case 'S': // Stand
                         cout << "You have chosen to stand.\n";
                         gameSte[0] = 6;
                         break;
-                    case 'D':
+                    case 'D': // Double Down
                         cout << "You have chosen to double down and double your wager. ";
                         plrChps -= plrWger[0];
                         plrWger[0] *= 2;
                         cout << "Your third card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
+                        // Determines if the player has gone bust or has a blackjack, and updates the game flags accordingly
                         if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
                             gameSte[0] = 7;
                         else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
@@ -247,8 +274,9 @@ int main(int argc, char **argv) {
                         else
                             gameSte[0] = 4;
                         break;
-                    default:
+                    default: // Hit
                         cout << "Your next card is a(n) " << appHand(plrHnd1, drawCrd()) << ".\n";
+                        // Determines if the player has gone bust or has a blackjack, and updates the game flags accordingly
                         if (plrHnd1[0] > 21 && plrHnd1[1] > 21)
                             gameSte[0] = 7;
                         else if (plrHnd1[0] == 21 || plrHnd1[1] == 21)
@@ -264,28 +292,34 @@ int main(int argc, char **argv) {
                 // Checks if the player has enough chips to double down and updates the plrDbDn flag accordingly
                 plrDbDn = plrChps >= plrWger[1];
 
+                /*
+                 *  Player Second Hand Game Loop
+                 */
                 do {
+                    // Output player options based on if this is the first player move or not, and on whether they can double down
                     cout << "Enter Option (Player Hand 2: " << outHndT(plrHnd2[0], plrHnd2[1]) << ", Dealer Hand: " << static_cast<int>(delHand[0]) << ")\nS: Stand, H: Hit" << (
                         plrDbDn && !sndMove ? ", D: Double Down" : "") << " -> ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
 
-                    // Input validation based on if the player can double down or not
+                    // Input validation using vldInpt() function based on if this is the first player move and if the player can double down or not
                     if (plrDbDn && !sndMove)
                         vldInpt(plrChce, vector<char>{'S', 'H', 'D'}, "S: Stand, H: Hit, D: Double Down");
                     else
                         vldInpt(plrChce, vector<char>{'S', 'H'}, "S: Stand, H: Hit");
 
+                    // Player Choices
                     switch (plrChce) {
-                        case 'S':
+                        case 'S': // Stand
                             cout << "You have chosen to stand.\n";
                             gameSte[1] += 6;
                             break;
-                        case 'D':
+                        case 'D': // Double Down
                             cout << "You have chosen to double down and double your wager. ";
                             plrChps -= plrWger[1];
                             plrWger[1] *= 2;
                             cout << "Your second card is a(n) " << appHand(plrHnd2, drawCrd()) << ".\n";
+                            // Determines if the player has gone bust or has a blackjack, and updates the game flags accordingly
                             if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
                                 gameSte[1] = 7;
                             else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
@@ -293,8 +327,9 @@ int main(int argc, char **argv) {
                             else
                                 gameSte[1] = 4;
                             break;
-                        default:
+                        default: // Hit
                             cout << "Your next card is a(n) " << appHand(plrHnd2, drawCrd()) << ".\n";
+                            // Determines if the player has gone bust or has a blackjack, and updates the game flags accordingly
                             if (plrHnd2[0] > 21 && plrHnd2[1] > 21)
                                 gameSte[1] = 7;
                             else if (plrHnd2[0] == 21 || plrHnd2[1] == 21)
@@ -308,68 +343,79 @@ int main(int argc, char **argv) {
 
             // Checks if the player's hand(s) have already gone bust or not
             if (gameSte[0] != 5 && ((!plrSplt && gameSte[0] != 7) || (plrSplt && (gameSte[0] != 7 || gameSte[1] != 7)))) {
-                // Dealer's Turn
+                /*
+                 *  Dealer's Turn
+                 */
                 cout << "The dealer's second card is a(n)" << appHand(delHand, delHand[3]) << ".\n";
                 popBkHnd(delHand);
+
                 // Dealer stands on soft 17
                 while (delHand[0] < 17)
                     cout << "The dealer's draws another card and it is a(n)" << appHand(delHand, drawCrd()) << ".\n";
 
+                // Updates gameSte variable based on if the dealer and player has a blackjack or not
                 if (delHand[0] > 21)
                     gameSte[0] = 8;
                 else if (delHand[0] == 21) {
-                    // Updates gameSte variable based on if the player has a blackjack or not
                     gameSte[0] = gameSte[0] == 2 ? 1 : 3;
                     gameSte[1] = gameSte[1] == 2 ? 1 : 3;
                 }
             }
         }
 
+        // Output hand totals for dealer and player
         cout << "Player Hand 1: " << outHndT(plrHnd1[0], plrHnd1[1]) << (plrHnd2[0] != 0 ? ", Player Hand 2: " + outHndT(plrHnd2[0], plrHnd2[1]) : "") << ", Dealer Hand: " <<
                 static_cast<int>(delHand[0]) << '\n';
 
-        // Game payout/ending
+        /*
+         *  Game Payout/Ending
+         */
         if (gameSte[0] == 8) {
+            // Dealer Bust
             cout << "Dealer has gone bust, you win 1x your wager" << (plrSplt ? " for both hands" : "") << "!.\n";
             plrChps += plrWger[0] * 2 + plrWger[1] * 2;
             plrStat[0]++;
         } else if (gameSte[0] == 5) {
+            // Surrender
             cout << "You have chose to surrender your hand, you receive half your original bet back.\n";
             plrChps += static_cast<unsigned short>(floor(plrWger[0] / 2));
             plrStat[1]++;
         } else {
             switch (gameSte[0]) {
-                case 1:
+                case 1: // Push (Blackjack)
                     cout << "Your" << (plrSplt ? " first" : "") << " hand and the dealer's hand are both blackjack's." << (plrSplt ? " Your first hand is a push"
                         : " Game ends in a push") << ".\n";
                     plrChps += plrWger[0];
                     break;
-                case 2:
+                case 2: // Player Blackjack
                     cout << "Your" << (plrSplt ? " first" : "") << " hand is a blackjack!" << (
                         plrSplt ? " You win 1.5x your wager for your first hand" : " You win 1.5x your wager") << "!\n";
                     plrChps += plrWger[0] + static_cast<unsigned short>(ceil(plrWger[0] * 1.5f));
                     plrStat[0]++;
                     break;
-                case 3:
+                case 3: // Dealer Blackjack
                     cout << "The dealer's hand is a blackjack and your" << (plrSplt ? " first" : "") << " hand is not." << (plrSplt ? " You lose your first hand" : " You lose") <<
                             ".\n";
                     plrStat[1]++;
                     break;
-                case 7:
+                case 7: // Player Bust
                     cout << "Your" << (plrSplt ? " first" : "") << " hand has gone bust." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                     plrStat[1]++;
                     break;
                 default:
+                    // Player Hand > Dealer Hand
                     if ((plrHnd1[0] > delHand[0] && plrHnd1[0] <= 21) || plrHnd1[1] > delHand[0]) {
                         cout << "Your" << (plrSplt ? " first" : "") << " hand is larger than the dealer's hand." << (plrSplt ? " You win 1x your wager for your first hand"
                                                                                                                          : " You win 1x your wager") << "!\n";
                         plrChps += plrWger[0] * 2;
                         plrStat[0]++;
                     } else if (plrHnd1[0] == delHand[0] || plrHnd1[1] == delHand[0]) {
+                        // Player Hand == Dealer Hand
                         cout << "Your" << (plrSplt ? " first" : "") << " hand is equal to the dealer's hand." << (plrSplt ? " Your first hand is a push" : " Game ends in a push")
                                 << ".\n";
                         plrChps += plrWger[0];
                     } else {
+                        // Player Hand < Dealer Hand
                         cout << "Your" << (plrSplt ? " first" : "") << " hand is smaller than the dealer's hand." << (plrSplt ? " You lose your first hand" : " You lose") << ".\n";
                         plrStat[1]++;
                     }
@@ -420,16 +466,17 @@ int main(int argc, char **argv) {
             cin >> plrChce;
             plrChce = static_cast<char>(toupper(plrChce));
 
-            // Input validation
+            // Input validation using vldInpt() function
             vldInpt(plrChce, vector<char>{'N', 'E'}, "N: New Game, E: Exit");
 
+            // If New Game
             if (plrChce == 78) {
                 if (plrCash >= 5) {
                     cout << "Would you like to purchase more chips? (Y or N) (Current Amount: " << plrChps << "): ";
                     cin >> plrChce;
                     plrChce = static_cast<char>(toupper(plrChce));
 
-                    // Input validation
+                    // Input validation using vldInpt() function
                     vldInpt(plrChce, vector<char>{'Y', 'N'});
 
                     if (plrChce == 89) {
@@ -510,6 +557,7 @@ bool isVldOp(const char &input, vector<char> vldOpts) {
 }
 
 void vldInpt(char &input, vector<char> vldOpts, const char message[]) {
+    // Determine if input is valid using isVldOp() function and continue prompting user until they enter valid input
     while (!isVldOp(input, vldOpts)) {
         cout << "Invalid option. Enter new option (" << message << "): ";
         cin >> input;
@@ -518,15 +566,18 @@ void vldInpt(char &input, vector<char> vldOpts, const char message[]) {
 }
 
 bool inRange(const float &input, const float &min, const float &max) {
+    // Inclusive Min/Max [min, max]
     return input <= max && input >= min;
 }
 
+// Integer Overload
 int min(const int &a, const int &b) {
     if (a <= b)
         return a;
     return b;
 }
 
+// Float Overload
 float min(const float &a, const float &b) {
     if (a <= b)
         return a;
@@ -536,13 +587,19 @@ float min(const float &a, const float &b) {
 string fmtNum(const int &number) {
     string strNum{to_string(abs(number))};
     int numLen{static_cast<int>(strNum.length())};
+
+    // Append negative sign if number is negative and the first one or two digits of the number in the highest place if number length is not a multiple of 3
     string output{number < 0 ? "-" : "" + strNum.substr(0, numLen % 3)};
+    // Loop and append the rest of the number by descending place with commas if the number is larger than 3 digits
     for (int i{0}; i < numLen / 3; i++) {
+        // For the first set of numbers to append
         if (i == 0) {
+            // Check if there are numbers before and append a comma if there is (numLen % 3 != 0)
             if (numLen % 3 != 0)
                 output += ",";
         } else
             output += ",";
+        // Append next 3 numbers
         output += strNum.substr(i * 3 + numLen % 3, 3);
     }
     return output;
@@ -550,10 +607,10 @@ string fmtNum(const int &number) {
 
 void genShoe(char shoe[]) {
     char temp;
-    int temp2;
     int smalElm{};
     int idxSmEl{};
 
+    // Append eight decks of cards to shoe array
     for (int i{0}; i < 8; i++) {
         for (int j{0}; j < 52; j++)
             shoe[(i * 52) + j] = j + 1;
@@ -591,17 +648,29 @@ void genShoe(char shoe[]) {
 char drawCrd() {
     static unsigned short deckIdx{0};
     static char shoe[416];
+
+    // Resets index to 0 if all cards have been drawn
     if (deckIdx >= 416)
         deckIdx = 0;
     if (deckIdx == 0)
         genShoe(shoe);
+
+    // Postfix increment operator increments after returning the next card
     return shoe[deckIdx++];
 }
 
+
+/* Card Suits
+ *  1. 1-13 -> Spades
+ *  2. 14-26 -> Hearts
+ *  3. 27-39 -> Diamonds
+ *  4. 40-52 -> Clubs
+ */
 string appHand(vector<char> &hand, const char &card) {
     string crdOut{};
     hand.push_back(card);
-    // If a King Card
+
+    // If a King Card (13 - King of Spades, 26 - King of Hears, 39 - King of Diamonds, 52 - King of Clubs)
     if (hand[hand.size() - 1] % 13 == 0) {
         hand[0] += 10;
         hand[1] += 10;
@@ -645,6 +714,7 @@ string appHand(vector<char> &hand, const char &card) {
             hand[1] += hand[hand.size() - 1] % 13;
             crdOut += to_string(hand[hand.size() - 1] % 13);
     }
+    // Appending Card Suit
     switch (hand[hand.size() - 1] / 13) {
         case 0:
             crdOut += " of Spades";
@@ -699,9 +769,12 @@ char popBkHnd(vector<char> &hand) {
 }
 
 string outHndT(const char &total1, const char &total2) {
+    // Outputs first total if they are both the same
     if (total1 == total2)
         return to_string(static_cast<int>(total1));
     if (total1 <= 21)
+        // Outputs first and second total if they are different and the first total is under 21
         return to_string(static_cast<int>(total1)) + '/' + to_string(static_cast<int>(total2));
+    // Outputs second total if the first toal is over 21 and they are different
     return to_string(static_cast<int>(total2));
 }
