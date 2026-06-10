@@ -133,11 +133,12 @@ int main(int argc, char **argv) {
     }
     plrChps = static_cast<unsigned int>(floor(plrInpt));
     plrCash -= plrChps;
+    cout << '<' << string(88, '-') << '>';
 
     // Game Loop
     do {
         // Get player wager
-        cout << "Enter wager amount (Whole $ only) [$5 to $" << fmtNum(min(plrChps, 10'000)) << "]: ";
+        cout << "\nEnter wager amount (Whole $ only) [$5 to $" << fmtNum(min(plrChps, 10'000)) << "]: ";
         cin >> plrInpt;
         plrInpt = floor(plrInpt);
 
@@ -457,7 +458,6 @@ int main(int argc, char **argv) {
                 plrHnd1 = vector<char>{0, 0};
                 plrHnd2 = vector<char>{0, 0};
                 delHand = vector<char>{0, 0};
-                cout << '\n';
             }
         }
     } while (plrChce != 69);
@@ -550,17 +550,36 @@ string fmtNum(const int &number) {
 
 void genShoe(char shoe[]) {
     char temp;
+    int temp2;
+    int smalElm{};
+    int idxSmEl{};
 
     for (int i{0}; i < 8; i++) {
         for (int j{0}; j < 52; j++)
             shoe[(i * 52) + j] = j + 1;
     }
 
+    // Selection Sort
+    for (int i{0}; i < 416; i++) {
+        idxSmEl = i;
+        smalElm = shoe[i];
+        for (int j{i + 1}; j < 416; j++) {
+            if (shoe[j] < smalElm) {
+                idxSmEl = j;
+                smalElm = shoe[j];
+            }
+        }
+        if (idxSmEl != i) {
+            temp = shoe[i];
+            shoe[i] = shoe[idxSmEl];
+            shoe[idxSmEl] = temp;
+        }
+    }
 
     // Iterate over deck 128 times and randomize cards every iteration
     for (int i{0}; i < 128; i++) {
         for (int j{0}; j < 415; j++) {
-            if (rand() % 2 == 0) {
+            if (rand() % 12 < 8) {
                 temp = shoe[j];
                 shoe[j] = shoe[j + 1];
                 shoe[j + 1] = temp;
