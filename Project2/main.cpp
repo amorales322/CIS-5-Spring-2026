@@ -346,12 +346,12 @@ int main(int argc, char **argv) {
                 /*
                  *  Dealer's Turn
                  */
-                cout << "The dealer's second card is a(n)" << appHand(delHand, delHand[3]) << ".\n";
+                cout << "The dealer's second card is a(n) " << appHand(delHand, delHand[3]) << ".\n";
                 popBkHnd(delHand);
 
                 // Dealer stands on soft 17
                 while (delHand[0] < 17)
-                    cout << "The dealer's draws another card and it is a(n)" << appHand(delHand, drawCrd()) << ".\n";
+                    cout << "The dealer's draws another card and it is a(n) " << appHand(delHand, drawCrd()) << ".\n";
 
                 // Updates gameSte variable based on if the dealer and player has a blackjack or not
                 if (delHand[0] > 21)
@@ -633,10 +633,10 @@ void genShoe(char shoe[]) {
         }
     }
 
-    // Iterate over deck 128 times and randomize cards every iteration
-    for (int i{0}; i < 128; i++) {
+    // Iterate over deck 2500 times and randomize cards every iteration
+    for (int i{0}; i < 2500; i++) {
         for (int j{0}; j < 415; j++) {
-            if (rand() % 12 < 8) {
+            if (rand() % 12 < 10) {
                 temp = shoe[j];
                 shoe[j] = shoe[j + 1];
                 shoe[j + 1] = temp;
